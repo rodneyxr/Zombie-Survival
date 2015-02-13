@@ -1,0 +1,13 @@
+syntax: glob
+Library
+obj
+Temp
+*.csproj
+*.sln
+*.userprefs
+*.orig
+*.orig.meta
+.DS_Store
+thumbs.db
+*.unityproj
+*.pidb
