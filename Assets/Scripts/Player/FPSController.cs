@@ -14,6 +14,7 @@ public class FPSController : MonoBehaviour {
     private Camera cam;
     private float pitch = 0f;
     private float pitchRange = 60.0f;
+    private float yaw = 0f;
 
     // Movement
     private Vector2 input = new Vector2();
@@ -33,45 +34,57 @@ public class FPSController : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         // Rotation
-        float yaw = Input.GetAxis("Mouse X") * mouseSensitivity;
+        yaw = Input.GetAxis("Mouse X") * mouseSensitivity;
         transform.Rotate(0, yaw, 0);
+        if (Mathf.Abs(yaw) > 1) {
+            anim.SetBool("Turning", true);
+        } else {
+            anim.SetBool("Turning", false);
+        }
+        anim.SetFloat("deltaYaw", yaw);
 
         pitch -= Input.GetAxis("Mouse Y") * mouseSensitivity;
         pitch = Mathf.Clamp(pitch, -pitchRange, pitchRange);
         //cam.transform.localRotation = Quaternion.Euler(pitch, 0, 0);
 
+        // Fire
+        if (Input.GetButton("Fire1")) {
+            anim.SetBool("Shooting", true);
+        } else {
+            anim.SetBool("Shooting", false);
+        }
+
         // Movement
         float movementSpeed = walkSpeed;
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftShift)) {
             movementSpeed = runSpeed;
+            anim.SetBool("Running", true);
+            anim.SetBool("Shooting", false);
+        } else {
+            anim.SetBool("Running", false);
+        }
 
         input.Set(Input.GetAxis("Horizontal") * movementSpeed, Input.GetAxis("Vertical") * movementSpeed);
-        //float forwardSpeed = Input.GetAxis("Vertical") * movementSpeed;
-        //float sideSpeed = Input.GetAxis("Horizontal") * movementSpeed;
         verticalVelocity += 2 * Physics.gravity.y * Time.deltaTime;
 
         // Jump
         if (cc.isGrounded && Input.GetButtonDown("Jump")) {
             verticalVelocity = jumpSpeed;
+            anim.SetTrigger("Jump");
         }
 
+
+
         Vector3 velocity = new Vector3(input.x, verticalVelocity, input.y);
+        anim.SetFloat("VelocityX", velocity.x);
+        anim.SetFloat("VelocityZ", velocity.z);
+        if (input.x != 0 || input.y != 0)
+            anim.SetFloat("Speed", 1);
+        else
+            anim.SetFloat("Speed", 0);
         velocity = transform.rotation * velocity;
 
         cc.Move(velocity * Time.deltaTime);
-        Animate();
     }
 
-    void Animate() {
-        if (input.y > 0) {
-            anim.Play("standing_walk_forward_1");
-        } else if (input.y < 0) {
-            anim.Play("standing_walk_back_1");
-        }
-        if (input.x > 0) {
-            anim.Play("standing_walk_right_1");
-        } else if (input.x < 0) {
-            anim.Play("standing_walk_left_1");
-        }
-    }
 }
