@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class FPSController : MonoBehaviour {
+public class PlayerController : MonoBehaviour {
 
     // the animator controller
     private Animator anim;
@@ -20,7 +20,7 @@ public class FPSController : MonoBehaviour {
     private Vector2 input = new Vector2();
     public float walkSpeed = 5.0f;
     public float runSpeed = 10.0f;
-    private float jumpSpeed = 8f;
+    public float jumpSpeed = 8f;
     private float verticalVelocity = 0f;
 
     // Use this for initialization
