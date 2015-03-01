@@ -9,11 +9,11 @@ public class PlayerController : MonoBehaviour {
     // character Controller
     private CharacterController cc;
 
+    // the player's weapon
+    public Weapon weapon;
+
     // Look
     public float mouseSensitivity = 7.0f;
-    private Camera cam;
-    private float pitch = 0f;
-    private float pitchRange = 60.0f;
     private float yaw = 0f;
 
     // Movement
@@ -27,7 +27,6 @@ public class PlayerController : MonoBehaviour {
     void Start() {
         Screen.lockCursor = true;
         cc = GetComponent<CharacterController>();
-        cam = GetComponentInChildren<Camera>();
         anim = GetComponentInChildren<Animator>();
     }
 
@@ -43,12 +42,8 @@ public class PlayerController : MonoBehaviour {
         }
         anim.SetFloat("deltaYaw", yaw);
 
-        pitch -= Input.GetAxis("Mouse Y") * mouseSensitivity;
-        pitch = Mathf.Clamp(pitch, -pitchRange, pitchRange);
-        //cam.transform.localRotation = Quaternion.Euler(pitch, 0, 0);
-
         // Fire
-        if (Input.GetButton("Fire1")) {
+        if (Input.GetButton("Fire1") && weapon.Fire()) {
             anim.SetBool("Shooting", true);
         } else {
             anim.SetBool("Shooting", false);

@@ -1,16 +1,50 @@
 fileFormatVersion: 2
-guid: b18130d7ae7a4084290d13d428ae1331
+guid: 0295c0ba01e2c9c40bb5d9e1f3cff053
 ModelImporter:
   serializedVersion: 16
   fileIDToRecycleName:
-    100000: //RootNode
-    400000: //RootNode
-    2300000: //RootNode
-    3300000: //RootNode
-    4300000: Plane
-    4300002: Grid
-    6400000: //RootNode
-    7400000: Default Take
+    100000: Bone001
+    100002: Bone002
+    100004: //RootNode
+    100006: g36c
+    100008: g36c_ammo
+    100010: g36c_bolt carrier
+    100012: g36c_buttstock
+    100014: g36c_foregrip
+    100016: g36c_holographic
+    100018: g36c_magazine
+    400000: Bone001
+    400002: Bone002
+    400004: //RootNode
+    400006: g36c
+    400008: g36c_ammo
+    400010: g36c_bolt carrier
+    400012: g36c_buttstock
+    400014: g36c_foregrip
+    400016: g36c_holographic
+    400018: g36c_magazine
+    2300000: g36c
+    2300002: g36c_ammo
+    2300004: g36c_bolt carrier
+    2300006: g36c_buttstock
+    2300008: g36c_foregrip
+    2300010: g36c_holographic
+    2300012: g36c_magazine
+    3300000: g36c
+    3300002: g36c_ammo
+    3300004: g36c_bolt carrier
+    3300006: g36c_buttstock
+    3300008: g36c_foregrip
+    3300010: g36c_holographic
+    3300012: g36c_magazine
+    4300000: g36c_buttstock
+    4300002: g36c
+    4300004: g36c_bolt carrier
+    4300006: g36c_magazine
+    4300008: g36c_holographic
+    4300010: g36c_ammo
+    4300012: g36c_foregrip
+    7400000: Take 001
     9500000: //RootNode
   materials:
     importMaterials: 1
@@ -31,9 +65,9 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: .00999999978
     meshCompression: 0
-    addColliders: 1
+    addColliders: 0
     importBlendShapes: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
