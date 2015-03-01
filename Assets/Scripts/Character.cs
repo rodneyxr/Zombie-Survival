@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using UnityEngine;
+using System.Collections;
 
-public abstract class Character : ICharacter {
+public abstract class Character : MonoBehaviour, ICharacter {
 
     protected int health;
 
-    public void Damage(int damage) {
+    public virtual void Damage(int damage) {
         health -= damage;
         if (health <= 0) {
             health = 0;
@@ -14,4 +15,7 @@ public abstract class Character : ICharacter {
 
     public abstract void OnDeath();
 
+    public int Health {
+        get { return health; }
+    }
 }

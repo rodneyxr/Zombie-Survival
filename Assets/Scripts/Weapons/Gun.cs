@@ -24,13 +24,14 @@ public class Gun : MonoBehaviour {
 
     public void Fire(Vector3 point) {
         Fire();
-        ObjectPool.ActivateProjectile(bulletTransform.position, Quaternion.LookRotation(point - bulletTransform.position, Vector3.up));
+        BulletPool.ActivateBullet(bulletTransform.position, Quaternion.LookRotation(point - bulletTransform.position, Vector3.up));
     }
 
     public void Fire(RaycastHit hit) {
         Fire();
-        ObjectPool.ActivateProjectile(bulletTransform.position, Quaternion.LookRotation(hit.point - bulletTransform.position, Vector3.up));
-        hit.collider.SendMessage("Damage", power, SendMessageOptions.DontRequireReceiver);
+        BulletPool.ActivateBullet(bulletTransform.position, Quaternion.LookRotation(hit.point - bulletTransform.position, Vector3.up));
+        if (hit.transform.CompareTag("Enemy"))
+            hit.collider.SendMessage("Damage", power, SendMessageOptions.DontRequireReceiver);
     }
 
     public virtual bool canFire() {
