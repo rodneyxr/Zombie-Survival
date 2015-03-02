@@ -27,6 +27,10 @@ public class Gun : MonoBehaviour {
         BulletPool.ActivateBullet(bulletTransform.position, Quaternion.LookRotation(point - bulletTransform.position, Vector3.up));
     }
 
+    //create hit particle here
+    //Particle particleClone = Instantiate(par, hit.point, Quaternion.LookRotation(hit.normal));
+    //Destroy(particleClone, 2);
+
     public void Fire(RaycastHit hit) {
         Fire();
         BulletPool.ActivateBullet(bulletTransform.position, Quaternion.LookRotation(hit.point - bulletTransform.position, Vector3.up));

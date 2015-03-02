@@ -4,8 +4,10 @@ using System.Collections;
 public class Enemy : Character {
 
     public int initialHealth = 100;
+    private Animator anim;
 
     void Start() {
+        anim = GetComponentInChildren<Animator>();
         health = initialHealth;
     }
 
