@@ -17,16 +17,20 @@ public class Player : Character {
     void Update() {
         if (timeToRegen < Time.time) {
             timeToRegen = Time.time + regenDelay;
-            Regen();
+            Regen(regenAmount);
         }
     }
 
-    public void Regen(int health) {
-
+    void OnTriggerEnter(Collider other) {
+        print("Player: Enter " + other.name);
     }
 
-    private void Regen() {
-        health = Mathf.Min(Health + regenAmount, maxHealth);
+    void OnTriggerExit(Collider other) {
+        print("Player: Exit " + other.name);
+    }
+
+    public void Regen(int health) {
+        this.health = Mathf.Min(this.health + health, maxHealth);
         healthBar.UpdateHealthBar();
     }
 
@@ -36,6 +40,6 @@ public class Player : Character {
     }
 
     public override void OnDeath() {
-
+        print("Player: Player OnDeath()");
     }
 }

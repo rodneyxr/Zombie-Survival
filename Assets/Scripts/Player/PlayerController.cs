@@ -32,6 +32,20 @@ public class PlayerController : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        // Pause
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            if (GameEngine.paused) {
+                print("Player: Unpause");
+                GameEngine.paused = false;
+                Screen.lockCursor = true;
+            } else {
+                print("Player: Pause");
+                GameEngine.paused = true;
+                Screen.lockCursor = false;
+            }
+        }
+        if (GameEngine.paused) return;
+
         // Rotation
         yaw = Input.GetAxis("Mouse X") * mouseSensitivity;
         transform.Rotate(0, yaw, 0);
@@ -41,13 +55,6 @@ public class PlayerController : MonoBehaviour {
             anim.SetBool("Turning", false);
         }
         anim.SetFloat("deltaYaw", yaw);
-
-        // Fire
-        if (Input.GetButton("Fire1") && weapon.Fire()) {
-            anim.SetBool("Shooting", true);
-        } else {
-            anim.SetBool("Shooting", false);
-        }
 
         // Movement
         float movementSpeed = walkSpeed;
@@ -59,6 +66,13 @@ public class PlayerController : MonoBehaviour {
             anim.SetBool("Running", false);
         }
 
+        // Fire
+        if (movementSpeed <= walkSpeed && Input.GetButton("Fire1") && weapon.Fire()) {
+            anim.SetBool("Shooting", true);
+        } else {
+            anim.SetBool("Shooting", false);
+        }
+
         input.Set(Input.GetAxis("Horizontal") * movementSpeed, Input.GetAxis("Vertical") * movementSpeed);
         verticalVelocity += 2 * Physics.gravity.y * Time.deltaTime;
 
@@ -67,8 +81,6 @@ public class PlayerController : MonoBehaviour {
             verticalVelocity = jumpSpeed;
             anim.SetTrigger("Jump");
         }
-
-
 
         Vector3 velocity = new Vector3(input.x, verticalVelocity, input.y);
         anim.SetFloat("VelocityX", velocity.x);

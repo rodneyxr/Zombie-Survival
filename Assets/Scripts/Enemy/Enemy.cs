@@ -15,6 +15,14 @@ public class Enemy : Character {
         //print(string.Format("Enemy Health: {0}", health));
     }
 
+    void OnTriggerEnter(Collider other) {
+        print("Enemy: Enter " + other.name);
+    }
+
+    void OnTriggerExit(Collider other) {
+        print("Enemy: Exit " + other.name);
+    }
+
     public override void OnDeath() {
         print(name + "OnDeath.");
         Destroy(this.gameObject);

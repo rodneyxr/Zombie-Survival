@@ -3,12 +3,16 @@ using System.Collections;
 
 public class AI : MonoBehaviour {
 
-    void Start() {
+    // Navigation
+    public Transform target;
+    private NavMeshAgent agent;
 
+    void Start() {
+        agent = GetComponent<NavMeshAgent>();
     }
 
     void Update() {
-
+        agent.SetDestination(target.position);
     }
 
     void getInBuilding() {

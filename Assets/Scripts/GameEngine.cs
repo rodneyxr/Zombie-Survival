@@ -3,8 +3,10 @@ using System.Collections;
 
 public class GameEngine : MonoBehaviour {
 
-    void Start() {
+    public static bool paused;
 
+    void Start() {
+        paused = false;
     }
 
     void Update() {
