@@ -7,6 +7,8 @@ public class Barricade : MonoBehaviour {
     private Vector3[] originalPositions;
     private Quaternion[] originalRotations;
     private int currentPlank = 0;
+    public float repairDelay = 2f;
+    private bool canRepair = true;
 
     void Start() {
         originalPositions = new Vector3[planks.Length];
@@ -29,13 +31,14 @@ public class Barricade : MonoBehaviour {
 
     public void Break() {
         print("Barricade: Enter Break");
-        if (currentPlank == planks.Length) { print("No Planks to break!"); return; }
+        if (Destroyed) { print("No Planks to break!"); return; }
         planks[currentPlank].isKinematic = false;
         planks[currentPlank].WakeUp();
         currentPlank++;
     }
 
     public void Repair() {
+        if (!canRepair) return;
         print("Barricade: Enter Repair");
         int plankIndex = currentPlank - 1;
         if (plankIndex < 0 || plankIndex > planks.Length) { print("No Planks to repair!"); return; }
@@ -46,10 +49,26 @@ public class Barricade : MonoBehaviour {
         plank.position = originalPositions[plankIndex];
         plank.rotation = originalRotations[plankIndex];
         currentPlank = plankIndex;
+        StartCoroutine(DelayRepair());
+    }
+
+    IEnumerator DelayRepair() {
+        canRepair = false;
+        yield return StartCoroutine(Wait(repairDelay));
+        canRepair = true;
+    }
+
+    IEnumerator Wait(float duration) {
+        for (float timer = 0; timer < duration; timer += Time.deltaTime)
+            yield return 0;
     }
 
     public bool NeedsRepair {
         get { return currentPlank > 0; }
+    }
+
+    public bool Destroyed {
+        get { return currentPlank == planks.Length; }
     }
 
 }
