@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class Player : Character {
@@ -9,6 +10,8 @@ public class Player : Character {
     public int regenAmount = 10;
     private float regenDelay = 5;
     private float timeToRegen = 0f;
+
+    private Barricade barricade = null; // current barricade the player is at
 
     void Start() {
         health = maxHealth;
@@ -23,10 +26,34 @@ public class Player : Character {
 
     void OnTriggerEnter(Collider other) {
         print("Player: Enter " + other.name);
+        switch (other.tag) {
+            case "Barricade":
+                barricade = other.GetComponent<Barricade>();
+                if (barricade.NeedsRepair) {
+                    PlayerMessage.DisplayMessage("Press 'E' to repair the barricade");
+                }
+                break;
+        }
+    }
+
+    void OnTriggerStay(Collider other) {
+        if (other.CompareTag("Barricade")) {
+            if (barricade == null || PlayerMessage.Enabled == barricade.NeedsRepair) return;
+            if (barricade.NeedsRepair)
+                PlayerMessage.DisplayMessage("Press 'E' to repair the barricade");
+            else
+                PlayerMessage.HideMessage();
+        }
     }
 
     void OnTriggerExit(Collider other) {
         print("Player: Exit " + other.name);
+        switch (other.tag) {
+            case "Barricade":
+                barricade = null;
+                PlayerMessage.HideMessage();
+                break;
+        }
     }
 
     public void Regen(int health) {

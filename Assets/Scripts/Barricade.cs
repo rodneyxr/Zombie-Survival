@@ -48,4 +48,8 @@ public class Barricade : MonoBehaviour {
         currentPlank = plankIndex;
     }
 
+    public bool NeedsRepair {
+        get { return currentPlank > 0; }
+    }
+
 }
