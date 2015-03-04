@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour {
 
     // character Controller
     private CharacterController cc;
+    private Player player;
 
     // the player's weapon
     public Weapon weapon;
@@ -28,6 +29,7 @@ public class PlayerController : MonoBehaviour {
         Screen.lockCursor = true;
         cc = GetComponent<CharacterController>();
         anim = GetComponentInChildren<Animator>();
+        player = GetComponent<Player>();
     }
 
     // Update is called once per frame
@@ -66,8 +68,11 @@ public class PlayerController : MonoBehaviour {
             anim.SetBool("Running", false);
         }
 
-        // Fire
-        if (movementSpeed <= walkSpeed && Input.GetButton("Fire1") && weapon.Fire()) {
+        // Repair Barricade
+        if (player.CurrentBarricade != null && Input.GetKey(KeyCode.E)) {
+            player.CurrentBarricade.Repair();
+        } // Fire
+        else if (movementSpeed <= walkSpeed && Input.GetButton("Fire1") && weapon.Fire()) {
             anim.SetBool("Shooting", true);
         } else {
             anim.SetBool("Shooting", false);

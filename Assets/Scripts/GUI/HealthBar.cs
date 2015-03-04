@@ -28,7 +28,7 @@ public class HealthBar : MonoBehaviour {
     }
 
     public void UpdateHealthBar() {
-        int health = player.Health;
+        float health = player.Health;
         healthText.text = "Health: " + health;
         float currentXValue = MapValues(health);
         healthTransform.position = new Vector3(currentXValue, cachedY);

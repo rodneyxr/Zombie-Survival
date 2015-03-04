@@ -1,69 +1,112 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class AI : MonoBehaviour {
+public class AI : Character {
 
-    // Self
-    //private 
+    public static WaveManager waveManager;
 
     // Navigation
-    public Transform target;
+    public Player player;
+    public Transform barricadeTarget;
+    private Transform playerTarget;
+    private Transform target;
     private NavMeshAgent agent;
+    private float defaultStoppingDistance;
 
     // AI
-    private enum AIState { TargetBarricade, AttackBarricade, ChasePlayer, AttackPlayer }
-    private AIState state;
+    private enum State { TargetBarricade, AttackBarricade, GetInside, ChasePlayer, AttackPlayer }
+    private State state;
     private Barricade barricade; // the barricade the AI will target/attack
     private bool isInside = false; // true if the AI has gotten passed the barricade already
+    private bool stop = false;
 
     // Attack
+    public float attackPower = 20f;
     public float attackSpeed = 3f;
     private float timeToAttack = 0f;
+    private float attackDistance;
+    private float attackOffset = 1.5f;
+    private float moveSpeed;
 
     // Animation
     private Animator anim;
+    int speedHash = Animator.StringToHash("Speed");
 
+    public float initialHealth = 100f;
 
     void Start() {
         anim = GetComponentInChildren<Animator>();
         agent = GetComponent<NavMeshAgent>();
-        state = AIState.TargetBarricade;
+        agent.speed = moveSpeed;
+        playerTarget = player.transform;
+        TransitionTargetBarricade();
+        defaultStoppingDistance = agent.stoppingDistance;
+        attackDistance = defaultStoppingDistance;
+        health = initialHealth;
+        InvokeRepeating("StateMachine", 0f, .3f);
     }
 
-    void Update() {
-        agent.SetDestination(target.position);
+    public void Init(Player player, Transform barricadeTarget, float moveSpeed) {
+        this.player = player;
+        this.barricadeTarget = barricadeTarget;
+        this.moveSpeed = moveSpeed;
+        this.gameObject.SetActive(true);
+    }
+
+    void StateMachine() {
         switch (state) {
-            case AIState.TargetBarricade:
+            case State.TargetBarricade:
                 TargetBarricade();
                 break;
 
-            case AIState.AttackBarricade:
+            case State.AttackBarricade:
                 AttackBarricade();
                 break;
 
-            case AIState.ChasePlayer:
+            case State.GetInside:
+                GetInside();
+                break;
+
+            case State.ChasePlayer:
                 ChasePlayer();
                 break;
 
-            case AIState.AttackPlayer:
+            case State.AttackPlayer:
                 AttackPlayer();
                 break;
         }
 
-        anim.SetFloat("Speed", agent.velocity.magnitude);
+        anim.SetFloat(speedHash, agent.velocity.magnitude);
+
+        //if (agent.enabled)
+        agent.SetDestination(target.position);
+    }
+
+    void Update() {
+        if (stop || (state.Equals(State.ChasePlayer) && agent.remainingDistance < attackDistance + attackOffset)) {
+            agent.Stop(true);
+        }
     }
 
     void OnTriggerEnter(Collider other) {
-        print("AI: Enter " + other.name);
         switch (other.tag) {
             case "Barricade":
                 if (isInside) return;
                 barricade = other.GetComponent<Barricade>();
-                if (barricade.Destroyed) {
-                    state = AIState.ChasePlayer;
-                } else {
-                    state = AIState.AttackBarricade;
+                if (barricade.transform != barricadeTarget) { // wrong target
+                    agent.ResetPath(); // recompute path
+                    return;
                 }
+                if (barricade.Destroyed) {
+                    TransitionChasePlayer();
+                } else {
+                    TransitionAttackBarricade();
+                }
+                break;
+            case "InsideTrigger":
+                if (isInside) return;
+                isInside = true;
+                TransitionChasePlayer();
                 break;
         }
     }
@@ -71,59 +114,127 @@ public class AI : MonoBehaviour {
     void OnTriggerStay(Collider other) {
         if (other.CompareTag("Barricade")) {
             if (isInside) return;
-            if (barricade == null || ((state.Equals(AIState.AttackBarricade) == !barricade.Destroyed))) return;
-            if (barricade.Destroyed)
-                state = AIState.ChasePlayer;
+            else if (barricade == null) TransitionTargetBarricade();
+            else if ((state.Equals(State.AttackBarricade) == !barricade.Destroyed)) return;
+            else if ((state.Equals(State.ChasePlayer))) TransitionAttackBarricade();
+            else if (barricade.Destroyed) TransitionGetInside();
+        } else if (other.CompareTag("OutsideTrigger")) {
+            if (barricade == null) return;
+            if (state.Equals(State.GetInside) && !barricade.Destroyed) {
+                TransitionAttackBarricade();
+            }
+
         }
     }
 
     void OnTriggerExit(Collider other) {
-        print("AI: Exit " + other.name);
         switch (other.tag) {
             case "Barricade":
                 barricade = null;
-                isInside = true;
                 break;
         }
     }
 
+    void TransitionChasePlayer() {
+        stop = false;
+        state = State.ChasePlayer;
+        agent.stoppingDistance = defaultStoppingDistance;
+        target = playerTarget;
+    }
+
+    void TransitionTargetBarricade() {
+        state = State.TargetBarricade;
+        agent.stoppingDistance = defaultStoppingDistance;
+        target = barricadeTarget;
+    }
+
+    void TransitionGetInside() {
+        state = State.GetInside;
+        agent.stoppingDistance = 0f;
+        target = barricade.insideTrigger.transform;
+    }
+
+    void TransitionAttackBarricade() {
+        state = State.AttackBarricade;
+        agent.stoppingDistance = defaultStoppingDistance;
+        target = barricadeTarget;
+    }
+
+    void TransitionAttackPlayer() {
+        stop = true;
+        state = State.AttackPlayer;
+        agent.stoppingDistance = defaultStoppingDistance;
+        target = playerTarget;
+    }
+
     void TargetBarricade() {
-        //print("Target Barricade");
+        target = barricadeTarget;
     }
 
     void AttackBarricade() {
-        //print("Attack Barricade");
+        if (barricade == null) return;
         if (timeToAttack < Time.time) {
             Attack();
             StartCoroutine(DelayedBreak());
         }
     }
 
+    void GetInside() {
+    }
+
     void ChasePlayer() {
-        //print("Chase Player");
+        if (isInside && agent.remainingDistance <= attackDistance + attackOffset) {
+            TransitionAttackPlayer();
+        }
     }
 
     void AttackPlayer() {
-        //print("Attack Player");
+        //agent.Stop(true);
+        //agent.enabled = false;
+        //agent.remainingDistance 
+        //Vector3.Distance(transform.position, target.position)
+        if (agent.remainingDistance > attackDistance + attackOffset) {
+            TransitionChasePlayer();
+            return;
+        }
+        if (timeToAttack < Time.time) {
+            Attack();
+            StartCoroutine(DelayedAttackPlayer());
+        }
+        SmoothLookAtPlayer();
     }
 
     void Attack() {
         anim.SetTrigger("Attack");
         timeToAttack = Time.time + attackSpeed;
+        //StartCoroutine(DelayedAttackPlayer());
+    }
+
+    public override void OnDeath() {
+        print(name + " OnDeath().");
+        Destroy(this.gameObject);
+        waveManager.ZombieDied();
+    }
+
+    void SmoothLookAtPlayer() {
+        Vector3 pos = player.transform.position - agent.transform.position;
+        Quaternion newRot = Quaternion.LookRotation(pos);
+        transform.rotation = Quaternion.Lerp(transform.rotation, newRot, Time.deltaTime * 5f);
     }
 
     IEnumerator DelayedBreak() {
         yield return StartCoroutine(Wait(1.2f));
-        barricade.Break();
+        if (barricade != null) barricade.Break();
+    }
+
+    IEnumerator DelayedAttackPlayer() {
+        yield return StartCoroutine(Wait(1.2f));
+        if (state.Equals(State.AttackPlayer)) player.Damage(attackPower);
     }
 
     IEnumerator Wait(float duration) {
         for (float timer = 0; timer < duration; timer += Time.deltaTime)
             yield return 0;
     }
-
-    //public AIState State {
-    //    get { return state; }
-    //}
 
 }

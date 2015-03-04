@@ -5,10 +5,10 @@ using System.Collections;
 public class Player : Character {
 
     public HealthBar healthBar;
-    public int maxHealth = 100;
+    public float maxHealth = 100f;
 
-    public int regenAmount = 10;
-    private float regenDelay = 5;
+    public float regenAmount = 10f;
+    private float regenDelay = 5f;
     private float timeToRegen = 0f;
 
     private Barricade barricade = null; // current barricade the player is at
@@ -25,7 +25,7 @@ public class Player : Character {
     }
 
     void OnTriggerEnter(Collider other) {
-        print("Player: Enter " + other.name);
+        //print("Player: Enter " + other.name);
         switch (other.tag) {
             case "Barricade":
                 barricade = other.GetComponent<Barricade>();
@@ -47,7 +47,7 @@ public class Player : Character {
     }
 
     void OnTriggerExit(Collider other) {
-        print("Player: Exit " + other.name);
+        //print("Player: Exit " + other.name);
         switch (other.tag) {
             case "Barricade":
                 barricade = null;
@@ -56,12 +56,12 @@ public class Player : Character {
         }
     }
 
-    public void Regen(int health) {
+    public void Regen(float health) {
         this.health = Mathf.Min(this.health + health, maxHealth);
         healthBar.UpdateHealthBar();
     }
 
-    public override void Damage(int damage) {
+    public override void Damage(float damage) {
         base.Damage(damage);
         healthBar.UpdateHealthBar();
     }
@@ -69,4 +69,11 @@ public class Player : Character {
     public override void OnDeath() {
         print("Player: Player OnDeath()");
     }
+
+    public Barricade CurrentBarricade {
+        get { return barricade; }
+    }
+
+    
+
 }

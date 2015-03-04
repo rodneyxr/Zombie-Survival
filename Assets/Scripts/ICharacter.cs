@@ -6,7 +6,7 @@ public interface ICharacter {
     /// Causes damage to the character
     /// </summary>
     /// <param name="damage"></param>
-   void Damage(int damage);
+   void Damage(float damage);
 
 
 }

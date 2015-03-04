@@ -3,9 +3,9 @@ using System.Collections;
 
 public abstract class Character : MonoBehaviour, ICharacter {
 
-    protected int health;
+    protected float health;
 
-    public virtual void Damage(int damage) {
+    public virtual void Damage(float damage) {
         health -= damage;
         if (health <= 0) {
             health = 0;
@@ -15,7 +15,7 @@ public abstract class Character : MonoBehaviour, ICharacter {
 
     public abstract void OnDeath();
 
-    public int Health {
+    public float Health {
         get { return health; }
     }
 }

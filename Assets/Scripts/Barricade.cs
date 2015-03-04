@@ -3,14 +3,23 @@ using System.Collections;
 
 public class Barricade : MonoBehaviour {
 
+    // Planks
     public Rigidbody[] planks;
     private Vector3[] originalPositions;
     private Quaternion[] originalRotations;
+    public Transform insideTrigger;
     private int currentPlank = 0;
+
+    // Repair/Break
     public float repairDelay = 2f;
+    public float breakDelay = 3f;
     private bool canRepair = true;
+    private bool canBreak = true;
+
+    private NavMeshObstacle shortWall;
 
     void Start() {
+        shortWall = GetComponentInChildren<NavMeshObstacle>();
         originalPositions = new Vector3[planks.Length];
         originalRotations = new Quaternion[planks.Length];
         for (int i = 0; i < planks.Length; i++) {
@@ -22,26 +31,27 @@ public class Barricade : MonoBehaviour {
     }
 
     void Update() {
-        if (Input.GetKeyDown(KeyCode.E)) {
-            Repair();
-        } else if (Input.GetKeyDown(KeyCode.Q)) {
+        if (Input.GetKeyDown(KeyCode.Q)) {
             Break();
         }
     }
 
     public void Break() {
-        print("Barricade: Enter Break");
-        if (Destroyed) { print("No Planks to break!"); return; }
+        if (!canBreak) return;
+        //print("Barricade: Enter Break");
+        if (Destroyed) { /*print("No Planks to break!");*/ return; }
         planks[currentPlank].isKinematic = false;
         planks[currentPlank].WakeUp();
         currentPlank++;
+        shortWall.enabled = !Destroyed;
+        StartCoroutine(DelayBreak());
     }
 
     public void Repair() {
         if (!canRepair) return;
-        print("Barricade: Enter Repair");
+        //print("Barricade: Enter Repair");
         int plankIndex = currentPlank - 1;
-        if (plankIndex < 0 || plankIndex > planks.Length) { print("No Planks to repair!"); return; }
+        if (plankIndex < 0 || plankIndex > planks.Length) { /*print("No Planks to repair!");*/ return; }
         Rigidbody plank = planks[plankIndex];
         plank.isKinematic = true;
         plank.Sleep();
@@ -49,6 +59,7 @@ public class Barricade : MonoBehaviour {
         plank.position = originalPositions[plankIndex];
         plank.rotation = originalRotations[plankIndex];
         currentPlank = plankIndex;
+        shortWall.enabled = !Destroyed;
         StartCoroutine(DelayRepair());
     }
 
@@ -56,6 +67,12 @@ public class Barricade : MonoBehaviour {
         canRepair = false;
         yield return StartCoroutine(Wait(repairDelay));
         canRepair = true;
+    }
+
+    IEnumerator DelayBreak() {
+        canBreak = false;
+        yield return StartCoroutine(Wait(breakDelay));
+        canBreak = true;
     }
 
     IEnumerator Wait(float duration) {
