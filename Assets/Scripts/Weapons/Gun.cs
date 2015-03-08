@@ -3,23 +3,56 @@ using System.Collections;
 
 public class Gun : MonoBehaviour {
 
+    public Transform bulletTransform;
     public int power = 10;
     public float range = 100f;
     public float fireDelay = 1f;
-    public Transform bulletTransform;
+    public int clipSize = 10;
+    public int maxAmmo = 100;
+    public int defaultAmmo = 30;
+    public bool isAutomatic = false;
 
+    private GunSFX gunSFX;
+    private int ammo = 0;
+    private int clip = 0;
     private float timeToFire = 0f;
 
     void Start() {
-
+        gunSFX = GetComponentInChildren<GunSFX>();
+        clip = clipSize;
+        ammo = defaultAmmo;
+        updateAmmo();
     }
 
     void Update() {
+    }
 
+    public void reload() {
+
+    }
+
+    public bool AttemptToFire() {
+        if (!FireReady) return false;
+        if (EmptyClip) {
+            SignalEmptyClip();
+            return false;
+        }
+        Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5F, 0.5F, 0));
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, Range)) {
+            Fire(hit);
+        } else { // hit nothing
+            Vector3 point = ray.origin + (ray.direction * Range);
+            Fire(point);
+        }
+        return true;
     }
 
     private void Fire() {
         timeToFire = Time.time + fireDelay;
+        gunSFX.shootSound.Play();
+        clip--;
+        updateAmmo();
     }
 
     public void Fire(Vector3 point) {
@@ -38,11 +71,24 @@ public class Gun : MonoBehaviour {
             hit.collider.SendMessage("Damage", power, SendMessageOptions.DontRequireReceiver);
     }
 
-    public virtual bool canFire() {
-        return timeToFire < Time.time;
+    private void SignalEmptyClip() {
+        gunSFX.emptyClipSound.Play();
+        timeToFire = Time.time + fireDelay;
     }
 
-    public virtual float Range {
+    public bool EmptyClip {
+        get { return clip < 1; }
+    }
+
+    public bool FireReady {
+        get { return timeToFire < Time.time; }
+    }
+
+    public void updateAmmo() {
+        HUD.Ammo = "Ammo: " + clip + " / " + ammo;
+    }
+
+    public float Range {
         get { return range; }
     }
 

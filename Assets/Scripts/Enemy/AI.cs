@@ -54,6 +54,7 @@ public class AI : Character {
     }
 
     void StateMachine() {
+        if (GameEngine.paused) return;
         switch (state) {
             case State.TargetBarricade:
                 TargetBarricade();
@@ -83,7 +84,7 @@ public class AI : Character {
     }
 
     void Update() {
-        if (stop || (state.Equals(State.ChasePlayer) && agent.remainingDistance < attackDistance + attackOffset)) {
+        if (GameEngine.paused || stop || (state.Equals(State.ChasePlayer) && agent.remainingDistance < attackDistance + attackOffset)) {
             agent.Stop(true);
         }
     }

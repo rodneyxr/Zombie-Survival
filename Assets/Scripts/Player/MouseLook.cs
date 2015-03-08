@@ -19,8 +19,8 @@ public class MouseLook : MonoBehaviour {
 
     public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
     public RotationAxes axes = RotationAxes.MouseXAndY;
-    public float sensitivityX = 15F;
-    public float sensitivityY = 15F;
+    public float defaultSensitivityX = 15F;
+    public float defaultSensitivityY = 15F;
 
     public float minimumX = -360F;
     public float maximumX = 360F;
@@ -28,10 +28,34 @@ public class MouseLook : MonoBehaviour {
     public float minimumY = -60F;
     public float maximumY = 60F;
 
+    private float sensitivityX;
+    private float sensitivityY;
+
     float rotationY = 0F;
+
+    // Aiming
+    public float zoomFOV = 30f;
+    private Camera cam;
+    private float normal;
+    private bool aiming = false;
+
+    void Start() {
+        cam = GetComponentInChildren<Camera>();
+        normal = cam.fieldOfView;
+        sensitivityX = defaultSensitivityX;
+        sensitivityY = defaultSensitivityY;
+
+        // Make the rigid body not change rotation
+        if (rigidbody)
+            rigidbody.freezeRotation = true;
+        Rigidbody modelRigidbody = GetComponentInChildren<Rigidbody>();
+        if (modelRigidbody)
+            modelRigidbody.freezeRotation = true;
+    }
 
     void Update() {
         if (GameEngine.paused) return;
+
         if (axes == RotationAxes.MouseXAndY) {
             float rotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensitivityX;
 
@@ -49,12 +73,26 @@ public class MouseLook : MonoBehaviour {
         }
     }
 
-    void Start() {
-        // Make the rigid body not change rotation
-        if (rigidbody)
-            rigidbody.freezeRotation = true;
-        Rigidbody modelRigidbody = GetComponentInChildren<Rigidbody>();
-        if (modelRigidbody)
-            modelRigidbody.freezeRotation = true;
+    private void SetAiming(bool aiming) {
+        this.aiming = aiming;
+        if (aiming) {
+            sensitivityX = defaultSensitivityX / 10f;
+            sensitivityY = defaultSensitivityY / 10f;
+        } else {
+            sensitivityX = defaultSensitivityX;
+            sensitivityY = defaultSensitivityY;
+        }
     }
+
+    public void Aim(bool aiming) {
+        if (this.aiming != aiming) {
+            SetAiming(aiming);
+        }
+        if (aiming) {
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, zoomFOV, Time.deltaTime * 10f);
+        } else {
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, normal, Time.deltaTime * 10f);
+        }
+    }
+
 }

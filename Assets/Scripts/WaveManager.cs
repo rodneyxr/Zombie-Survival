@@ -19,15 +19,10 @@ public class WaveManager : MonoBehaviour {
     private int zombiesLeft;
     private float zombieSpeed;
 
-    //void Update() {
-
-    //}
-
     public void StartWave(int wave) {
         this.wave = wave;
         zombiesLeft = (int)(initialNumberOfZombies * Mathf.Pow(1.5f, (float)wave - 1));
         zombieSpeed = initialZombieSpeed * Mathf.Pow(1.2f, (float)wave - 1);
-        print(zombieSpeed);
         StartCoroutine(DelayedWaveChange());
         SpawnZombies(zombiesLeft);
     }
