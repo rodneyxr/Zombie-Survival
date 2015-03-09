@@ -39,7 +39,8 @@ public class PlayerController : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
-        Screen.lockCursor = true;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         cc = GetComponent<CharacterController>();
         anim = GetComponentInChildren<Animator>();
         player = GetComponent<Player>();
@@ -53,11 +54,13 @@ public class PlayerController : MonoBehaviour {
             if (GameEngine.paused) {
                 print("Player: Unpause");
                 GameEngine.paused = false;
-                Screen.lockCursor = true;
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = false;
             } else {
                 print("Player: Pause");
                 GameEngine.paused = true;
-                Screen.lockCursor = false;
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = true;
             }
         }
         if (GameEngine.paused) return;

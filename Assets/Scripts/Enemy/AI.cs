@@ -19,6 +19,7 @@ public class AI : Character {
     private Barricade barricade; // the barricade the AI will target/attack
     private bool isInside = false; // true if the AI has gotten passed the barricade already
     private bool stop = false;
+    private bool paused = false;
 
     // Attack
     public float attackPower = 20f;
@@ -79,14 +80,21 @@ public class AI : Character {
 
         anim.SetFloat(speedHash, agent.velocity.magnitude);
 
-        //if (agent.enabled)
         agent.SetDestination(target.position);
     }
 
     void Update() {
-        if (GameEngine.paused || stop || (state.Equals(State.ChasePlayer) && agent.remainingDistance < attackDistance + attackOffset)) {
-            agent.Stop(true);
+        if (GameEngine.paused && !paused) {
+            agent.Stop();
+            paused = true;
+        } else if (!GameEngine.paused && paused) {
+            agent.Resume();
+            paused = false;
         }
+
+        //if (stop || (state.Equals(State.ChasePlayer) && agent.remainingDistance < attackDistance + attackOffset)) {
+        //    agent.Stop();
+        //}
     }
 
     void OnTriggerEnter(Collider other) {
@@ -138,6 +146,7 @@ public class AI : Character {
 
     void TransitionChasePlayer() {
         stop = false;
+        agent.Resume();
         state = State.ChasePlayer;
         agent.stoppingDistance = defaultStoppingDistance;
         target = playerTarget;
@@ -163,6 +172,7 @@ public class AI : Character {
 
     void TransitionAttackPlayer() {
         stop = true;
+        agent.Stop();
         state = State.AttackPlayer;
         agent.stoppingDistance = defaultStoppingDistance;
         target = playerTarget;
@@ -190,10 +200,6 @@ public class AI : Character {
     }
 
     void AttackPlayer() {
-        //agent.Stop(true);
-        //agent.enabled = false;
-        //agent.remainingDistance 
-        //Vector3.Distance(transform.position, target.position)
         if (agent.remainingDistance > attackDistance + attackOffset) {
             TransitionChasePlayer();
             return;
@@ -208,7 +214,6 @@ public class AI : Character {
     void Attack() {
         anim.SetTrigger("Attack");
         timeToAttack = Time.time + attackSpeed;
-        //StartCoroutine(DelayedAttackPlayer());
     }
 
     public override void OnDeath() {
