@@ -3,13 +3,10 @@ using System.Collections;
 
 public class WeaponManager : MonoBehaviour {
 
+    public IK ik;
     public GameObject[] weapons;
     public int initialWeaponIndex;
     private Gun gun;
-
-    // Animation
-    public Animator anim;
-    private int hashShoot = Animator.StringToHash("Shoot");
 
     void Start() {
         try {
@@ -23,6 +20,9 @@ public class WeaponManager : MonoBehaviour {
         if (weapons.Length > 0) {
             weapons[initialWeaponIndex].SetActive(true);
             gun = weapons[initialWeaponIndex].GetComponent<Gun>();
+            ik.Gun = gun;
+            IK.ikLeftHandWeight = 1f;
+
             for (int i = 0; i < weapons.Length; i++) {
                 if (i != initialWeaponIndex)
                     weapons[i].SetActive(false);
@@ -30,8 +30,16 @@ public class WeaponManager : MonoBehaviour {
         }
     }
 
-    public bool Fire() {
-        return gun.AttemptToFire();
+    public void Fire() {
+        gun.AttemptToFire();
+    }
+
+    public void Reload() {
+        gun.StartReload();
+    }
+
+    public void StopReload() {
+        gun.StopReload();
     }
 
     public Gun Gun {

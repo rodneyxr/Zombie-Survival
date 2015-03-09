@@ -17,6 +17,13 @@ public class Gun : MonoBehaviour {
     private int clip = 0;
     private float timeToFire = 0f;
 
+    public Transform IK_LEFT_HAND;
+    //public Transform IK_RIGHT_HAND;
+
+    // Reload
+    private bool reloading = false;
+    private Coroutine reloadRoutine;
+
     void Start() {
         gunSFX = GetComponentInChildren<GunSFX>();
         clip = clipSize;
@@ -27,16 +34,49 @@ public class Gun : MonoBehaviour {
     void Update() {
     }
 
-    public void reload() {
+    public void StartReload() {
+        if (clip >= clipSize || reloading || reloadRoutine != null) { // clip is already full
+            return;
+        }
 
+        PlayerController.AnimateReload();
+        gunSFX.reloadSound.Play();
+        reloading = true;
+        reloadRoutine = StartCoroutine(DelayedReload());
+        IK.ikLeftHandWeight = .5f;
     }
 
-    public bool AttemptToFire() {
-        if (!FireReady) return false;
+    public void StopReload() {
+        if (reloadRoutine == null) return;
+        reloading = false;
+        StopCoroutine(reloadRoutine);
+        reloadRoutine = null;
+        PlayerController.AnimateCancelReload();
+        gunSFX.reloadSound.Stop();
+        IK.ikLeftHandWeight = 1f;
+    }
+
+    private void Reload() {
+        reloading = false;
+        if (ammo < 1) {
+            StopReload();
+            return;
+        }
+
+        IK.ikLeftHandWeight = 1f;
+        int ammoReload = Mathf.Min(ammo, clipSize - clip);
+        clip += ammoReload;
+        ammo -= ammoReload;
+        updateAmmo();
+    }
+
+    public void AttemptToFire() {
+        if (!FireReady) return;
         if (EmptyClip) {
             SignalEmptyClip();
-            return false;
+            return;
         }
+        if (reloading) StopReload();
         Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5F, 0.5F, 0));
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, Range)) {
@@ -45,11 +85,11 @@ public class Gun : MonoBehaviour {
             Vector3 point = ray.origin + (ray.direction * Range);
             Fire(point);
         }
-        return true;
     }
 
     private void Fire() {
         timeToFire = Time.time + fireDelay;
+        PlayerController.AnimateShoot();
         gunSFX.shootSound.Play();
         clip--;
         updateAmmo();
@@ -60,9 +100,6 @@ public class Gun : MonoBehaviour {
         BulletPool.ActivateBullet(bulletTransform.position, Quaternion.LookRotation(point - bulletTransform.position, Vector3.up));
     }
 
-    //create hit particle here
-    //Particle particleClone = Instantiate(par, hit.point, Quaternion.LookRotation(hit.normal));
-    //Destroy(particleClone, 2);
 
     public void Fire(RaycastHit hit) {
         Fire();
@@ -92,4 +129,22 @@ public class Gun : MonoBehaviour {
         get { return range; }
     }
 
+    public bool Reloading {
+        get { return reloading; }
+    }
+
+    IEnumerator DelayedReload() {
+        // wait for animation to finish
+        yield return StartCoroutine(Wait(3.2f));
+        if (reloading) Reload();
+    }
+
+    IEnumerator Wait(float duration) {
+        for (float timer = 0; timer < duration; timer += Time.deltaTime)
+            yield return 0;
+    }
+
 }
+//create hit particle here
+//Particle particleClone = Instantiate(par, hit.point, Quaternion.LookRotation(hit.normal));
+//Destroy(particleClone, 2);

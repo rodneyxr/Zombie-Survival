@@ -4,16 +4,18 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 
     // the animator controller
-    private Animator anim;
-    private int hashSpeed = Animator.StringToHash("Speed");
-    private int hashVelocityX = Animator.StringToHash("VelocityX");
-    private int hashVelocityZ = Animator.StringToHash("VelocityZ");
-    private int hashRunning = Animator.StringToHash("Running");
-    private int hashTurning = Animator.StringToHash("Turning");
-    private int hashDeltaYaw = Animator.StringToHash("deltaYaw");
-    private int hashFire = Animator.StringToHash("Fire");
-    private int hashJump = Animator.StringToHash("Jump");
-    private int hashShoot = Animator.StringToHash("Shoot");
+    private static Animator anim;
+    private static int hashSpeed = Animator.StringToHash("Speed");
+    private static int hashVelocityX = Animator.StringToHash("VelocityX");
+    private static int hashVelocityZ = Animator.StringToHash("VelocityZ");
+    private static int hashRunning = Animator.StringToHash("Running");
+    private static int hashTurning = Animator.StringToHash("Turning");
+    private static int hashDeltaYaw = Animator.StringToHash("deltaYaw");
+    private static int hashFire = Animator.StringToHash("Fire");
+    private static int hashJump = Animator.StringToHash("Jump");
+    private static int hashShoot = Animator.StringToHash("Shoot");
+    private static int hashReload = Animator.StringToHash("Reload");
+    private static int hashCancelReload = Animator.StringToHash("CancelReload");
 
     // character Controller
     private CharacterController cc;
@@ -93,6 +95,7 @@ public class PlayerController : MonoBehaviour {
             movementSpeed = walkSpeed;
         if (!aiming && Input.GetKey(KeyCode.LeftShift)) {
             movementSpeed = runSpeed;
+            if (weapon.Gun.Reloading) weapon.StopReload();
             anim.SetBool(hashRunning, true);
         } else {
             anim.SetBool(hashRunning, false);
@@ -103,17 +106,20 @@ public class PlayerController : MonoBehaviour {
             player.CurrentBarricade.Repair();
         } // Fire
         else if (movementSpeed <= walkSpeed) {
-            bool fired = false;
+
+            if (Input.GetKeyDown(KeyCode.R)) {
+                weapon.Reload();
+            }
+
             if (weapon.Gun.isAutomatic) {
                 if (Input.GetButton("Fire1")) {
-                    fired = weapon.Fire();
+                    weapon.Fire();
                 }
             } else {
                 if (Input.GetButtonDown("Fire1")) {
-                    fired = weapon.Fire();
+                    weapon.Fire();
                 }
             }
-            if (fired) anim.SetTrigger(hashShoot);
         }
 
         input.Set(Input.GetAxis("Horizontal") * movementSpeed, Input.GetAxis("Vertical") * movementSpeed);
@@ -135,6 +141,20 @@ public class PlayerController : MonoBehaviour {
         velocity = transform.rotation * velocity;
 
         cc.Move(velocity * Time.deltaTime);
+    }
+
+
+
+    public static void AnimateReload() {
+        anim.SetTrigger(hashReload);
+    }
+
+    public static void AnimateCancelReload() {
+        anim.SetTrigger(hashCancelReload);
+    }
+
+    public static void AnimateShoot() {
+        anim.SetTrigger(hashShoot);
     }
 
 }

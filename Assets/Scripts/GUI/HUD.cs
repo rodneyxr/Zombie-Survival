@@ -12,7 +12,7 @@ public class HUD : MonoBehaviour {
     private static Text wave;
     private static Text zombiesLeft;
 
-    void Start() {
+    void Awake() {
         ammo = textAmmo;
         wave = textWave;
         zombiesLeft = textZombiesLeft;
