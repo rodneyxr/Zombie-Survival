@@ -41,15 +41,15 @@ public class FallingWall : MonoBehaviour {
 
     void Push() {
         canPush = false;
-        wall.rigidbody.isKinematic = false;
-        wall.rigidbody.WakeUp();
+        wall.GetComponent<Rigidbody>().isKinematic = false;
+        wall.GetComponent<Rigidbody>().WakeUp();
         PlayerMessage.HideMessage();
         StartCoroutine(DelayedPush());
     }
 
     IEnumerator DelayedPush() {
         yield return StartCoroutine(Wait(1.5f));
-        while (wall.rigidbody.velocity.magnitude > .2f) {
+        while (wall.GetComponent<Rigidbody>().velocity.magnitude > .2f) {
             yield return StartCoroutine(Wait(.2f));
         }
         GameObject.Destroy(forceField);

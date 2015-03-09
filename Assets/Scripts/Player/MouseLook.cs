@@ -46,8 +46,8 @@ public class MouseLook : MonoBehaviour {
         sensitivityY = defaultSensitivityY;
 
         // Make the rigid body not change rotation
-        if (rigidbody)
-            rigidbody.freezeRotation = true;
+        if (GetComponent<Rigidbody>())
+            GetComponent<Rigidbody>().freezeRotation = true;
         Rigidbody modelRigidbody = GetComponentInChildren<Rigidbody>();
         if (modelRigidbody)
             modelRigidbody.freezeRotation = true;
