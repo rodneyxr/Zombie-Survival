@@ -20,9 +20,10 @@ public class Barricade : MonoBehaviour {
     private NavMeshObstacle shortWall;
 
     // Sound
-    public AudioSource sound;
+    private AudioSource sound;
 
     void Start() {
+        sound = GetComponent<AudioSource>();
         shortWall = GetComponentInChildren<NavMeshObstacle>();
         originalPositions = new Vector3[planks.Length];
         originalRotations = new Quaternion[planks.Length];
