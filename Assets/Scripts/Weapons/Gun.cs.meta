@@ -1,8 +1,18 @@
 fileFormatVersion: 2
 guid: bb5cf18fafc847f4598ba3fcb8d34a41
+timeCreated: 1425946386
+licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - soundReload: {instanceID: 0}
+  - soundShoot: {instanceID: 0}
+  - soundEmptyClip: {instanceID: 0}
+  - bulletTransform: {instanceID: 0}
+  - IK_LEFT_HAND: {instanceID: 0}
+  - bloodSplat: {fileID: 100000, guid: 80cd87e5e66b84b35b29f75198eeda8b, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,20 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-/// MouseLook rotates the transform based on the mouse delta.
-/// Minimum and Maximum values can be used to constrain the possible rotation
-
-/// To make an FPS style character:
-/// - Create a capsule.
-/// - Add the MouseLook script to the capsule.
-///   -> Set the mouse look to use LookX. (You want to only turn character but not tilt it)
-/// - Add FPSInputController script to the capsule
-///   -> A CharacterMotor and a CharacterController component will be automatically added.
-
-/// - Create a camera. Make the camera a child of the capsule. Reset it's transform.
-/// - Add a MouseLook script to the camera.
-///   -> Set the mouse look to use LookY. (You want the camera to tilt up and down like a head. The character already turns.)
-[AddComponentMenu("Camera-Control/Mouse Look")]
 public class MouseLook : MonoBehaviour {
 
     public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
@@ -34,6 +20,7 @@ public class MouseLook : MonoBehaviour {
     float rotationY = 0F;
 
     // Aiming
+    public Texture2D crosshairImage;
     public float zoomFOV = 30f;
     private Camera cam;
     private float normal;
@@ -51,6 +38,16 @@ public class MouseLook : MonoBehaviour {
         Rigidbody modelRigidbody = GetComponentInChildren<Rigidbody>();
         if (modelRigidbody)
             modelRigidbody.freezeRotation = true;
+    }
+
+    void OnGUI() {
+        float scaleFactor = Mathf.Max(Screen.width, Screen.height) / 1080f;
+        float shrinkFactor = cam.fieldOfView / normal;
+        float imgWidth = (crosshairImage.width * scaleFactor) * shrinkFactor;
+        float imgHeight = (crosshairImage.height * scaleFactor) * shrinkFactor;
+        float xMin = (Screen.width / 2) - (imgWidth / 2);
+        float yMin = (Screen.height / 2) - (imgHeight / 2);
+        GUI.DrawTexture(new Rect(xMin, yMin, imgWidth, imgHeight), crosshairImage);
     }
 
     void Update() {

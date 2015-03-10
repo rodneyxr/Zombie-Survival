@@ -32,6 +32,9 @@ public class Gun : MonoBehaviour {
     private bool reloading = false;
     private Coroutine reloadRoutine;
 
+    // Particles
+    public GameObject bloodSplat;
+
     void Start() {
         sound = GetComponent<AudioSource>();
         clip = clipSize;
@@ -109,8 +112,12 @@ public class Gun : MonoBehaviour {
     public void Fire(RaycastHit hit) {
         Fire();
         BulletPool.ActivateBullet(bulletTransform.position, Quaternion.LookRotation(hit.point - bulletTransform.position, Vector3.up));
-        if (hit.transform.CompareTag("Enemy"))
+        if (hit.transform.CompareTag("Enemy")) {
+            Instantiate(bloodSplat, hit.point, Quaternion.LookRotation(hit.normal));
+            //GameObject splat = Instantiate(bloodSplat, hit.point, Quaternion.LookRotation(hit.normal)) as GameObject;
+            //Destroy(splat, 1);
             hit.collider.SendMessage("Damage", power, SendMessageOptions.DontRequireReceiver);
+        }
     }
 
     private void SignalEmptyClip() {
