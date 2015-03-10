@@ -19,6 +19,9 @@ public class Barricade : MonoBehaviour {
 
     private NavMeshObstacle shortWall;
 
+    // Sound
+    public AudioSource sound;
+
     void Start() {
         shortWall = GetComponentInChildren<NavMeshObstacle>();
         originalPositions = new Vector3[planks.Length];
@@ -61,6 +64,7 @@ public class Barricade : MonoBehaviour {
         plank.rotation = originalRotations[plankIndex];
         currentPlank = plankIndex;
         shortWall.enabled = !Destroyed;
+        sound.Play();
         StartCoroutine(DelayRepair());
     }
 

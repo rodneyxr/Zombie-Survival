@@ -32,14 +32,32 @@ public class Gun : MonoBehaviour {
     private bool reloading = false;
     private Coroutine reloadRoutine;
 
-    // Particles
+    // Blood Splat
     public GameObject bloodSplat;
+
+    // Muzzle Flash
+    public ParticleEmitter muzzleFlash;
+    public GameObject redLight;
+    public GameObject orangeLight;
+    public GameObject yellowLight;
+    private float muzzleTimer = 0f;
+    private float muzzleCooler = .1f;
 
     void Start() {
         sound = GetComponent<AudioSource>();
         clip = clipSize;
         ammo = defaultAmmo;
         updateAmmo();
+    }
+
+    void Update() {
+        if (muzzleTimer < 0 && redLight.activeSelf) {
+            //print("off");
+            redLight.SetActive(false);
+            orangeLight.SetActive(false);
+            yellowLight.SetActive(false);
+        }
+        muzzleTimer -= Time.deltaTime;
     }
 
     public void StartReload() {
@@ -84,6 +102,7 @@ public class Gun : MonoBehaviour {
             SignalEmptyClip();
             return;
         }
+
         if (reloading) StopReload();
         Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5F, 0.5F, 0));
         RaycastHit hit;
@@ -97,6 +116,15 @@ public class Gun : MonoBehaviour {
 
     private void Fire() {
         timeToFire = Time.time + fireDelay;
+
+        if (muzzleTimer < 0) {
+            muzzleFlash.Emit();
+            redLight.SetActive(true);
+            orangeLight.SetActive(true);
+            yellowLight.SetActive(true);
+            muzzleTimer = muzzleCooler;
+        }
+
         PlayerController.AnimateShoot();
         sound.PlayOneShot(soundShoot, 1f);
         clip--;
@@ -107,7 +135,6 @@ public class Gun : MonoBehaviour {
         Fire();
         BulletPool.ActivateBullet(bulletTransform.position, Quaternion.LookRotation(point - bulletTransform.position, Vector3.up));
     }
-
 
     public void Fire(RaycastHit hit) {
         Fire();

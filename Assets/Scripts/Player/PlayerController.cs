@@ -11,13 +11,18 @@ public class PlayerController : MonoBehaviour {
     private static int hashRunning = Animator.StringToHash("Running");
     private static int hashTurning = Animator.StringToHash("Turning");
     private static int hashDeltaYaw = Animator.StringToHash("deltaYaw");
-    private static int hashFire = Animator.StringToHash("Fire");
     private static int hashJump = Animator.StringToHash("Jump");
     private static int hashShoot = Animator.StringToHash("Shoot");
     private static int hashReload = Animator.StringToHash("Reload");
     private static int hashCancelReload = Animator.StringToHash("CancelReload");
+    private static int hashHit = Animator.StringToHash("Hit");
+    private static int hashDead = Animator.StringToHash("Dead");
 
-    // character Controller
+    // Sound
+    private AudioSource sound;
+    public AudioClip soundHit;
+
+    // Character Controller
     private CharacterController cc;
     private Player player;
 
@@ -46,6 +51,7 @@ public class PlayerController : MonoBehaviour {
         cc = GetComponent<CharacterController>();
         anim = GetComponentInChildren<Animator>();
         player = GetComponent<Player>();
+        sound = GetComponent<AudioSource>();
         mouseSensitivity = defaultMouseSensitivity;
     }
 
@@ -143,7 +149,9 @@ public class PlayerController : MonoBehaviour {
         cc.Move(velocity * Time.deltaTime);
     }
 
-
+    public void Die() {
+        anim.SetBool(hashDead, true);
+    }
 
     public static void AnimateReload() {
         anim.SetTrigger(hashReload);
@@ -155,6 +163,11 @@ public class PlayerController : MonoBehaviour {
 
     public static void AnimateShoot() {
         anim.SetTrigger(hashShoot);
+    }
+
+    public void AnimateHit() {
+        sound.PlayOneShot(soundHit, 1f);
+        anim.SetTrigger(hashHit);
     }
 
 }

@@ -18,7 +18,7 @@ public class AI : Character {
     public State state;
     private Barricade barricade; // the barricade the AI will target/attack
     private bool isInside = false; // true if the AI has gotten passed the barricade already
-    private bool stop = false;
+    //private bool stop = false;
     private bool paused = false;
 
     // Attack
@@ -142,7 +142,7 @@ public class AI : Character {
     }
 
     void TransitionChasePlayer() {
-        stop = false;
+        //stop = false;
         agent.Resume();
         state = State.ChasePlayer;
         agent.stoppingDistance = defaultStoppingDistance;
@@ -168,7 +168,7 @@ public class AI : Character {
     }
 
     void TransitionAttackPlayer() {
-        stop = true;
+        //stop = true;
         agent.Stop();
         state = State.AttackPlayer;
         agent.stoppingDistance = defaultStoppingDistance;

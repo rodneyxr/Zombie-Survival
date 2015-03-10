@@ -8,19 +8,29 @@ public class Player : Character {
     public float maxHealth = 100f;
 
     public float regenAmount = 10f;
+    public float poisonAmount = 10f;
+    public bool poisoned = false;
     private float regenDelay = 5f;
     private float timeToRegen = 0f;
+
+    private PlayerController playerController;
 
     private Barricade barricade = null; // current barricade the player is at
 
     void Start() {
+        playerController = GetComponent<PlayerController>();
         health = maxHealth;
+        //Damage(100);
     }
 
     void Update() {
         if (timeToRegen < Time.time) {
             timeToRegen = Time.time + regenDelay;
-            Regen(regenAmount);
+            if (poisoned) {
+                Damage(poisonAmount);
+            } else {
+                Regen(regenAmount);
+            }
         }
     }
 
@@ -63,17 +73,17 @@ public class Player : Character {
 
     public override void Damage(float damage) {
         base.Damage(damage);
+        playerController.AnimateHit();
         healthBar.UpdateHealthBar();
     }
 
     public override void OnDeath() {
         print("Player: Player OnDeath()");
+        playerController.Die();
     }
 
     public Barricade CurrentBarricade {
         get { return barricade; }
     }
-
-    
 
 }
