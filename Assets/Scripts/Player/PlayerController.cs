@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour {
     private Player player;
 
     // the player's weapon
-    public WeaponManager weapon;
+    public WeaponManager weaponManager;
 
     // Look
     public MouseLook mouseLook;
@@ -73,6 +73,13 @@ public class PlayerController : MonoBehaviour {
         }
         if (GameEngine.paused) return;
 
+        // Switch Weapons
+        if (Input.GetKeyDown(KeyCode.Alpha1)) {
+            weaponManager.SwitchWeapon(0);
+        } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
+            weaponManager.SwitchWeapon(1);
+        }
+
         // Aim
         if (Input.GetButton("Aim")) {
             aiming = true;
@@ -101,7 +108,7 @@ public class PlayerController : MonoBehaviour {
             movementSpeed = walkSpeed;
         if (!aiming && Input.GetKey(KeyCode.LeftShift)) {
             movementSpeed = runSpeed;
-            if (weapon.Gun.Reloading) weapon.StopReload();
+            if (weaponManager.Gun.Reloading) weaponManager.StopReload();
             anim.SetBool(hashRunning, true);
         } else {
             anim.SetBool(hashRunning, false);
@@ -114,16 +121,16 @@ public class PlayerController : MonoBehaviour {
         else if (movementSpeed <= walkSpeed) {
 
             if (Input.GetKeyDown(KeyCode.R)) {
-                weapon.Reload();
+                weaponManager.Reload();
             }
 
-            if (weapon.Gun.isAutomatic) {
+            if (weaponManager.Gun.isAutomatic) {
                 if (Input.GetButton("Fire1")) {
-                    weapon.Fire();
+                    weaponManager.Fire();
                 }
             } else {
                 if (Input.GetButtonDown("Fire1")) {
-                    weapon.Fire();
+                    weaponManager.Fire();
                 }
             }
         }

@@ -52,7 +52,6 @@ public class Gun : MonoBehaviour {
 
     void Update() {
         if (muzzleTimer < 0 && redLight.activeSelf) {
-            //print("off");
             redLight.SetActive(false);
             orangeLight.SetActive(false);
             yellowLight.SetActive(false);
@@ -112,6 +111,18 @@ public class Gun : MonoBehaviour {
             Vector3 point = ray.origin + (ray.direction * Range);
             Fire(point);
         }
+    }
+
+    public void Disable() {
+        StopReload();
+        gameObject.SetActive(false);
+    }
+
+    public void Enable() {
+        gameObject.SetActive(true);
+        IK.gun = this;
+        IK.ikLeftHandWeight = 1f;
+        updateAmmo();
     }
 
     private void Fire() {
