@@ -7,6 +7,7 @@ public class Barricade : MonoBehaviour {
     public Rigidbody[] planks;
     private Vector3[] originalPositions;
     private Quaternion[] originalRotations;
+    public Transform targetTransform;
     public Transform insideTrigger;
     private int currentPlank = 0;
 

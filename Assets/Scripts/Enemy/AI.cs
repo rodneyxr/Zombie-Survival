@@ -11,11 +11,11 @@ public class AI : Character {
     private Transform playerTarget;
     private Transform target;
     private NavMeshAgent agent;
-    private float defaultStoppingDistance;
+    public float defaultStoppingDistance;
 
     // AI
-    private enum State { TargetBarricade, AttackBarricade, GetInside, ChasePlayer, AttackPlayer }
-    private State state;
+    public enum State { TargetBarricade, AttackBarricade, GetInside, ChasePlayer, AttackPlayer }
+    public State state;
     private Barricade barricade; // the barricade the AI will target/attack
     private bool isInside = false; // true if the AI has gotten passed the barricade already
     private bool stop = false;
@@ -26,12 +26,12 @@ public class AI : Character {
     public float attackSpeed = 3f;
     private float timeToAttack = 0f;
     private float attackDistance;
-    private float attackOffset = 1.5f;
+    private float attackOffset = 1f;
     private float moveSpeed;
 
     // Animation
     private Animator anim;
-    int speedHash = Animator.StringToHash("Speed");
+    private int hashSpeed = Animator.StringToHash("Speed");
 
     public float initialHealth = 100f;
 
@@ -41,7 +41,7 @@ public class AI : Character {
         agent.speed = moveSpeed;
         playerTarget = player.transform;
         TransitionTargetBarricade();
-        defaultStoppingDistance = agent.stoppingDistance;
+        agent.stoppingDistance = defaultStoppingDistance;
         attackDistance = defaultStoppingDistance;
         health = initialHealth;
         InvokeRepeating("StateMachine", 0f, .3f);
@@ -78,8 +78,7 @@ public class AI : Character {
                 break;
         }
 
-        anim.SetFloat(speedHash, agent.velocity.magnitude);
-
+        anim.SetFloat(hashSpeed, agent.velocity.magnitude);
         agent.SetDestination(target.position);
     }
 
@@ -91,10 +90,6 @@ public class AI : Character {
             agent.Resume();
             paused = false;
         }
-
-        //if (stop || (state.Equals(State.ChasePlayer) && agent.remainingDistance < attackDistance + attackOffset)) {
-        //    agent.Stop();
-        //}
     }
 
     void OnTriggerEnter(Collider other) {
@@ -102,7 +97,7 @@ public class AI : Character {
             case "Barricade":
                 if (isInside) return;
                 barricade = other.GetComponent<Barricade>();
-                if (barricade.transform != barricadeTarget) { // wrong target
+                if (barricade.targetTransform != barricadeTarget) { // wrong target
                     agent.ResetPath(); // recompute path
                     return;
                 }
@@ -127,7 +122,9 @@ public class AI : Character {
             else if ((state.Equals(State.AttackBarricade) == !barricade.Destroyed)) return;
             else if ((state.Equals(State.ChasePlayer))) TransitionAttackBarricade();
             else if (barricade.Destroyed) TransitionGetInside();
-        } else if (other.CompareTag("OutsideTrigger")) {
+
+        }
+        if (other.CompareTag("OutsideTrigger")) {
             if (barricade == null) return;
             if (state.Equals(State.GetInside) && !barricade.Destroyed) {
                 TransitionAttackBarricade();

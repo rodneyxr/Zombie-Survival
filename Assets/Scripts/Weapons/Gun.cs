@@ -3,6 +3,13 @@ using System.Collections;
 
 public class Gun : MonoBehaviour {
 
+    // Sound
+    private AudioSource sound;
+    public AudioClip soundReload;
+    public AudioClip soundShoot;
+    public AudioClip soundEmptyClip;
+
+    // Settings
     public Transform bulletTransform;
     public int power = 10;
     public float range = 100f;
@@ -12,11 +19,12 @@ public class Gun : MonoBehaviour {
     public int defaultAmmo = 30;
     public bool isAutomatic = false;
 
-    private GunSFX gunSFX;
+    // local variables
     private int ammo = 0;
     private int clip = 0;
     private float timeToFire = 0f;
 
+    // IK
     public Transform IK_LEFT_HAND;
     //public Transform IK_RIGHT_HAND;
 
@@ -25,25 +33,21 @@ public class Gun : MonoBehaviour {
     private Coroutine reloadRoutine;
 
     void Start() {
-        gunSFX = GetComponentInChildren<GunSFX>();
+        sound = GetComponent<AudioSource>();
         clip = clipSize;
         ammo = defaultAmmo;
         updateAmmo();
     }
 
-    void Update() {
-    }
-
     public void StartReload() {
-        if (clip >= clipSize || reloading || reloadRoutine != null) { // clip is already full
+        if (clip >= clipSize || ammo < 1 || reloading || reloadRoutine != null) { // clip is already full
             return;
         }
 
         PlayerController.AnimateReload();
-        gunSFX.reloadSound.Play();
+        sound.PlayOneShot(soundReload);
         reloading = true;
         reloadRoutine = StartCoroutine(DelayedReload());
-        IK.ikLeftHandWeight = .5f;
     }
 
     public void StopReload() {
@@ -51,13 +55,14 @@ public class Gun : MonoBehaviour {
         reloading = false;
         StopCoroutine(reloadRoutine);
         reloadRoutine = null;
-        PlayerController.AnimateCancelReload();
-        gunSFX.reloadSound.Stop();
         IK.ikLeftHandWeight = 1f;
+        PlayerController.AnimateCancelReload();
+        sound.Stop();
     }
 
     private void Reload() {
         reloading = false;
+        reloadRoutine = null;
         if (ammo < 1) {
             StopReload();
             return;
@@ -90,7 +95,7 @@ public class Gun : MonoBehaviour {
     private void Fire() {
         timeToFire = Time.time + fireDelay;
         PlayerController.AnimateShoot();
-        gunSFX.shootSound.Play();
+        sound.PlayOneShot(soundShoot, 1f);
         clip--;
         updateAmmo();
     }
@@ -109,7 +114,7 @@ public class Gun : MonoBehaviour {
     }
 
     private void SignalEmptyClip() {
-        gunSFX.emptyClipSound.Play();
+        sound.PlayOneShot(soundEmptyClip, 1f);
         timeToFire = Time.time + fireDelay;
     }
 
@@ -135,7 +140,11 @@ public class Gun : MonoBehaviour {
 
     IEnumerator DelayedReload() {
         // wait for animation to finish
-        yield return StartCoroutine(Wait(3.2f));
+        yield return StartCoroutine(Wait(1.0f));
+        IK.ikLeftHandWeight = .5f;
+        yield return StartCoroutine(Wait(1.0f));
+        IK.ikLeftHandWeight = 1f;
+        yield return StartCoroutine(Wait(1.2f));
         if (reloading) Reload();
     }
 

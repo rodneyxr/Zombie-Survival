@@ -11,7 +11,7 @@ public class WaveManager : MonoBehaviour {
     public GameObject[] zombies;
     public Transform[] barricades;
     public float spawnRadius = 50f;
-    private int entrances = 4;
+    public int entrances = 5;
 
     public int initialNumberOfZombies = 6;
     public float initialZombieSpeed = .5f;
@@ -34,7 +34,7 @@ public class WaveManager : MonoBehaviour {
     }
 
     public void SpawnZombie() {
-        AI zombie = (GameObject.Instantiate(zombies[Random.Range(0, zombies.Length - 1)], RandomOnUnitCircle(spawnRadius), Quaternion.identity) as GameObject).GetComponent<AI>();
+        AI zombie = (GameObject.Instantiate(zombies[Random.Range(0, zombies.Length)], RandomOnUnitCircle(spawnRadius), Quaternion.identity) as GameObject).GetComponent<AI>();
         zombie.Init(player, barricades[Random.Range(0, entrances)], Random.Range(initialZombieSpeed, zombieSpeed));
     }
 
@@ -55,7 +55,7 @@ public class WaveManager : MonoBehaviour {
     }
 
     public void GameChanger() {
-        entrances = barricades.Length - 1;
+        entrances = barricades.Length;
     }
 
     IEnumerator DelayedWaveChange() {
