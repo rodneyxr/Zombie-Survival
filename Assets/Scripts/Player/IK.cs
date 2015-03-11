@@ -12,12 +12,9 @@ public class IK : MonoBehaviour {
     }
 
     void OnAnimatorIK(int layerIndex) {
-        //float weight = Mathf.Lerp(anim.GetIKPositionWeight(AvatarIKGoal.LeftHand), ikLeftHandWeight, Time.deltaTime * 5f);
+        if (gun == null) return;
         anim.SetIKPositionWeight(AvatarIKGoal.LeftHand, ikLeftHandWeight);
         anim.SetIKPosition(AvatarIKGoal.LeftHand, gun.IK_LEFT_HAND.position);
     }
 
-    //public Gun Gun {
-    //    set { gun = value; }
-    //}
 }

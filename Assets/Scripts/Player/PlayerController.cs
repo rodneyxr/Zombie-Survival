@@ -74,11 +74,15 @@ public class PlayerController : MonoBehaviour {
         if (GameEngine.paused) return;
 
         // Switch Weapons
-        if (Input.GetKeyDown(KeyCode.Alpha1)) {
-            weaponManager.SwitchWeapon(0);
-        } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
-            weaponManager.SwitchWeapon(1);
-        }
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            weaponManager.SwitchWeapon();
+        //else if (Input.GetKeyDown(KeyCode.Alpha2))
+        //    weaponManager.DropWeapon();
+        //if (Input.GetKeyDown(KeyCode.Alpha1)) {
+        //    weaponManager.SwitchWeapon(0);
+        //} else if (Input.GetKeyDown(KeyCode.Alpha2)) {
+        //    weaponManager.SwitchWeapon(1);
+        //}
 
         // Aim
         if (Input.GetButton("Aim")) {
@@ -124,15 +128,16 @@ public class PlayerController : MonoBehaviour {
                 weaponManager.Reload();
             }
 
-            if (weaponManager.Gun.isAutomatic) {
-                if (Input.GetButton("Fire1")) {
-                    weaponManager.Fire();
+            if (weaponManager.Gun != null)
+                if (weaponManager.Gun.isAutomatic) {
+                    if (Input.GetButton("Fire1")) {
+                        weaponManager.Fire();
+                    }
+                } else {
+                    if (Input.GetButtonDown("Fire1")) {
+                        weaponManager.Fire();
+                    }
                 }
-            } else {
-                if (Input.GetButtonDown("Fire1")) {
-                    weaponManager.Fire();
-                }
-            }
         }
 
         input.Set(Input.GetAxis("Horizontal") * movementSpeed, Input.GetAxis("Vertical") * movementSpeed);

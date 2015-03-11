@@ -86,4 +86,14 @@ public class Player : Character {
         get { return barricade; }
     }
 
+    public void PickUp(GameObject item) {
+        switch (item.tag) {
+            case "Weapon":
+                playerController.weaponManager.PickUpWeapon(item);
+                break;
+
+            default:
+                break;
+        }
+    }
 }
