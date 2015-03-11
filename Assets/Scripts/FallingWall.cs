@@ -56,6 +56,7 @@ public class FallingWall : MonoBehaviour {
         GameObject.Destroy(glass);
         GameObject.Destroy(obsticle);
         GameObject.Destroy(boxTrigger);
+        wall.GetComponent<Rigidbody>().isKinematic = true;
         gameChangerClip.Play();
         waveManager.GameChanger();
     }

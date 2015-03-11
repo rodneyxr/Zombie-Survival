@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Player : Character {
 
@@ -47,12 +48,15 @@ public class Player : Character {
     }
 
     void OnTriggerStay(Collider other) {
-        if (other.CompareTag("Barricade")) {
-            if (barricade == null || PlayerMessage.Enabled == barricade.NeedsRepair) return;
-            if (barricade.NeedsRepair)
-                PlayerMessage.DisplayMessage("Press 'E' to repair the barricade");
-            else
-                PlayerMessage.HideMessage();
+        switch (other.tag) {
+            case "Barricade":
+                if (barricade == null || PlayerMessage.Enabled == barricade.NeedsRepair) return;
+                if (barricade.NeedsRepair)
+                    PlayerMessage.DisplayMessage("Press 'E' to repair the barricade");
+                else
+                    PlayerMessage.HideMessage();
+                break;
+
         }
     }
 
@@ -62,6 +66,17 @@ public class Player : Character {
             case "Barricade":
                 barricade = null;
                 PlayerMessage.HideMessage();
+                break;
+        }
+    }
+
+    public void PickUp(GameObject item) {
+        switch (item.tag) {
+            case "Weapon":
+                playerController.weaponManager.PickUpWeapon(item);
+                break;
+
+            default:
                 break;
         }
     }
@@ -86,14 +101,5 @@ public class Player : Character {
         get { return barricade; }
     }
 
-    public void PickUp(GameObject item) {
-        switch (item.tag) {
-            case "Weapon":
-                playerController.weaponManager.PickUpWeapon(item);
-                break;
 
-            default:
-                break;
-        }
-    }
 }

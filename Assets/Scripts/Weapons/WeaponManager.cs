@@ -6,27 +6,13 @@ public class WeaponManager : MonoBehaviour {
 
     public int maxWeapons = 2;
     public int initialWeaponIndex = 0;
-    //private List<GameObject> weaponsOLD;
     private List<Gun> weapons;
 
-    //public GameObject[] weapons;
-    //private Gun[] guns;
     private Gun currentWeapon;
     private int cIndex; // current index 
 
     void Start() {
-        //weaponsOLD = new List<GameObject>(numberOfWeapons);
         weapons = new List<Gun>(maxWeapons);
-        //guns = new Gun[weapons.Length];
-
-        //try {
-        //    if (initialWeaponIndex < 0 || initialWeaponIndex >= weapons.Count)
-        //        throw new System.Exception("Weapon Index is out of Range.");
-        //} catch (System.Exception ex) {
-        //    Debug.LogError(ex.Message);
-        //    initialWeaponIndex = 0;
-        //}
-        //transform.Cast<Transform>().Where(c => c.gameObject.tag == "Weapon").ToArray()
         foreach (Gun o in GetComponentsInChildren(typeof(Gun), true)) {
             print(o.name);
             PickUpWeapon(o.gameObject);
@@ -34,7 +20,6 @@ public class WeaponManager : MonoBehaviour {
 
         if (weapons.Count > 0) {
             for (int i = 0; i < weapons.Count; i++) {
-                //weapons[i] = weapons[i].GetComponent<Gun>();
                 weapons[i].gameObject.SetActive(false);
             }
         }
@@ -42,6 +27,10 @@ public class WeaponManager : MonoBehaviour {
         cIndex = initialWeaponIndex;
         currentWeapon = weapons[cIndex];
         SwitchWeapon(initialWeaponIndex);
+    }
+
+    public void SwitchWeapon() {
+        SwitchWeapon(Next());
     }
 
     public void SwitchWeapon(int index) {
@@ -64,25 +53,18 @@ public class WeaponManager : MonoBehaviour {
         currentWeapon.Enable();
     }
 
-    public void SwitchWeapon() {
-        SwitchWeapon(Next());
-    }
-
     public void DropWeapon(Gun weaponToDrop) {
-        //Gun weaponToDrop = currentWeapon;
-        //SwitchWeapon();
-        //weapons.Remove(weaponToDrop);
-
         Vector3 dropPosition = transform.position;
         dropPosition.y = 0f;
-
-        ItemDisplay iDisplay = (Instantiate(Resources.Load("Prefabs/ItemDisplay"), dropPosition, Quaternion.identity) as GameObject).GetComponent<ItemDisplay>();
-        iDisplay.Init(weaponToDrop.gameObject, 30f, true);
+        ItemDisplay itemDisplay = (Instantiate(Resources.Load("Prefabs/ItemDisplay"), dropPosition, Quaternion.identity) as GameObject).GetComponent<ItemDisplay>();
+        itemDisplay.Init(weaponToDrop.gameObject, 30f, true);
     }
 
     private Gun SwapCurrentWeapon(Gun newWeapon) {
         Gun oldWeapon = currentWeapon;
         weapons[cIndex] = newWeapon;
+        currentWeapon = newWeapon;
+        newWeapon.Enable();
         return oldWeapon;
     }
 

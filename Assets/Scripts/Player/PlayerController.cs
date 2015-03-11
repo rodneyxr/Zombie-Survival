@@ -61,11 +61,13 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetButtonDown("Cancel")) {
             if (GameEngine.paused) {
                 print("Player: Unpause");
+                PlayerMessage.HideMessage();
                 GameEngine.paused = false;
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = false;
             } else {
                 print("Player: Pause");
+                PlayerMessage.DisplayMessage("PAUSED");
                 GameEngine.paused = true;
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = true;
@@ -76,13 +78,6 @@ public class PlayerController : MonoBehaviour {
         // Switch Weapons
         if (Input.GetKeyDown(KeyCode.Alpha1))
             weaponManager.SwitchWeapon();
-        //else if (Input.GetKeyDown(KeyCode.Alpha2))
-        //    weaponManager.DropWeapon();
-        //if (Input.GetKeyDown(KeyCode.Alpha1)) {
-        //    weaponManager.SwitchWeapon(0);
-        //} else if (Input.GetKeyDown(KeyCode.Alpha2)) {
-        //    weaponManager.SwitchWeapon(1);
-        //}
 
         // Aim
         if (Input.GetButton("Aim")) {
@@ -121,14 +116,13 @@ public class PlayerController : MonoBehaviour {
         // Repair Barricade
         if (player.CurrentBarricade != null && Input.GetKey(KeyCode.E)) {
             player.CurrentBarricade.Repair();
-        } // Fire
-        else if (movementSpeed <= walkSpeed) {
+        }
 
+        // Fire
+        if (movementSpeed <= walkSpeed) {
             if (Input.GetKeyDown(KeyCode.R)) {
                 weaponManager.Reload();
-            }
-
-            if (weaponManager.Gun != null)
+            } else if (weaponManager.Gun != null) {
                 if (weaponManager.Gun.isAutomatic) {
                     if (Input.GetButton("Fire1")) {
                         weaponManager.Fire();
@@ -138,6 +132,7 @@ public class PlayerController : MonoBehaviour {
                         weaponManager.Fire();
                     }
                 }
+            }
         }
 
         input.Set(Input.GetAxis("Horizontal") * movementSpeed, Input.GetAxis("Vertical") * movementSpeed);
