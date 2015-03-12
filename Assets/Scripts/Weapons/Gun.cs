@@ -13,11 +13,13 @@ public class Gun : MonoBehaviour {
     public Transform bulletTransform;
     public int power = 10;
     public float range = 100f;
-    public float fireDelay = 1f;
+    public float fireDelay = .5f;
+    public float burstDelay = 0f;
     public int clipSize = 10;
     public int maxAmmo = 100;
     public int defaultAmmo = 30;
     public bool isAutomatic = false;
+    public int burst = 1;
 
     // local variables
     private int ammo = 0;
@@ -126,36 +128,62 @@ public class Gun : MonoBehaviour {
     }
 
     private void Fire() {
-        timeToFire = Time.time + fireDelay;
+        timeToFire = Time.time + burstDelay;
+        StartCoroutine(Burst());
+        //if (muzzleTimer < 0) {
+        //    muzzleFlash.Emit();
+        //    redLight.SetActive(true);
+        //    orangeLight.SetActive(true);
+        //    yellowLight.SetActive(true);
+        //    muzzleTimer = muzzleCooler;
+        //}
 
-        if (muzzleTimer < 0) {
-            muzzleFlash.Emit();
-            redLight.SetActive(true);
-            orangeLight.SetActive(true);
-            yellowLight.SetActive(true);
-            muzzleTimer = muzzleCooler;
-        }
-
-        PlayerController.AnimateShoot();
-        sound.PlayOneShot(soundShoot, 1f);
-        clip--;
-        updateAmmo();
+        //PlayerController.AnimateShoot();
+        //sound.PlayOneShot(soundShoot, 1f);
+        //clip--;
+        //updateAmmo();
     }
 
+    IEnumerator Burst() {
+        for (int shotsFired = 0; shotsFired < burst; shotsFired++) {
+            if (muzzleTimer < 0) {
+                muzzleFlash.Emit();
+                redLight.SetActive(true);
+                orangeLight.SetActive(true);
+                yellowLight.SetActive(true);
+                muzzleTimer = muzzleCooler;
+            }
+
+            PlayerController.AnimateShoot();
+            sound.PlayOneShot(soundShoot, 1f);
+            clip--;
+            updateAmmo();
+            if (collider != null)
+                collider.SendMessage("Damage", power, SendMessageOptions.DontRequireReceiver);
+            if (fireDelay == 0) break;
+            yield return new WaitForSeconds(fireDelay);
+        }
+        collider = null;
+        yield return null;
+    }
+
+    private Collider collider;
+
     public void Fire(Vector3 point) {
-        Fire();
         BulletPool.ActivateBullet(bulletTransform.position, Quaternion.LookRotation(point - bulletTransform.position, Vector3.up));
+        Fire();
     }
 
     public void Fire(RaycastHit hit) {
-        Fire();
         BulletPool.ActivateBullet(bulletTransform.position, Quaternion.LookRotation(hit.point - bulletTransform.position, Vector3.up));
         if (hit.transform.CompareTag("Enemy")) {
             Instantiate(bloodSplat, hit.point, Quaternion.LookRotation(hit.normal));
             //GameObject splat = Instantiate(bloodSplat, hit.point, Quaternion.LookRotation(hit.normal)) as GameObject;
             //Destroy(splat, 1);
-            hit.collider.SendMessage("Damage", power, SendMessageOptions.DontRequireReceiver);
+            //hit.collider.SendMessage("Damage", power, SendMessageOptions.DontRequireReceiver);
+            collider = hit.collider;
         }
+        Fire();
     }
 
     private void SignalEmptyClip() {
@@ -164,7 +192,7 @@ public class Gun : MonoBehaviour {
     }
 
     public bool EmptyClip {
-        get { return clip < 1; }
+        get { return clip < burst; }
     }
 
     public bool FireReady {

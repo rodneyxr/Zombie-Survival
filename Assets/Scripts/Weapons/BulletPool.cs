@@ -18,15 +18,15 @@ public class BulletPool : MonoBehaviour {
         }
     }
 
-    private void ActivateBullet() {
-        for (int i = 0; i < bullets.Length; i++) {
-            if (!bullets[i].activeSelf) {
-                bullets[i].SetActive(true);
-                bullets[i].GetComponent<Bullet>().Activate();
-                return;
-            }
-        }
-    }
+    //private void ActivateBullet() {
+    //    for (int i = 0; i < bullets.Length; i++) {
+    //        if (!bullets[i].activeSelf) {
+    //            bullets[i].SetActive(true);
+    //            bullets[i].GetComponent<Bullet>().Activate();
+    //            return;
+    //        }
+    //    }
+    //}
 
     public static void ActivateBullet(Vector3 position, Quaternion rotation) {
         for (int i = 0; i < bullets.Length; i++) {
