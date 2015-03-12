@@ -14,7 +14,7 @@ public class WeaponManager : MonoBehaviour {
     void Start() {
         weapons = new List<Gun>(maxWeapons);
         foreach (Gun o in GetComponentsInChildren(typeof(Gun), true)) {
-            print(o.name);
+            //print(o.name);
             PickUpWeapon(o.gameObject);
         }
 

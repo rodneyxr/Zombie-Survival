@@ -99,6 +99,10 @@ public class Player : Character {
         return true;
     }
 
+    public int Money {
+        get { return money; }
+    }
+
     public void Regen(float health) {
         this.health = Mathf.Min(this.health + health, maxHealth);
         healthBar.UpdateHealthBar();

@@ -4,6 +4,7 @@ using System.Collections;
 public class FallingWall : MonoBehaviour {
 
     private WaveManager waveManager;
+    private Player player;
 
     public GameObject forceField;
     public GameObject obsticle;
@@ -11,6 +12,9 @@ public class FallingWall : MonoBehaviour {
     public GameObject glass;
     public AudioSource gameChangerClip;
     private BoxCollider boxTrigger;
+
+    // Economy
+    public int price = 500;
 
     private bool canPush = false;
 
@@ -21,19 +25,43 @@ public class FallingWall : MonoBehaviour {
 
     void Update() {
         if (canPush && Input.GetKeyDown(KeyCode.E)) {
-            Push();
+            if (player.ChargeMoney(price)) {
+                Push();
+                PlayerMessage.HideMessage();
+            }
         }
     }
 
     void OnTriggerEnter(Collider other) {
         if (other.CompareTag("Player")) {
-            canPush = true;
-            PlayerMessage.DisplayMessage("Press 'E' to push the wall");
+            player = other.GetComponent<Player>();
+            if (player.Money < price) {
+                PlayerMessage.DisplayMessage("You need $" + price + " to open this wall");
+                canPush = false;
+            } else {
+                PlayerMessage.DisplayMessage("Press 'E' to push the wall for $" + price);
+                canPush = true;
+            }
+        }
+    }
+
+    void OnTriggerStay(Collider other) {
+        if (other.CompareTag("Player")) {
+            if (player.Money < price != !canPush) {
+                if (player.Money < price) {
+                    PlayerMessage.DisplayMessage("You need $" + price + " to open this wall");
+                    canPush = false;
+                } else {
+                    PlayerMessage.DisplayMessage("Press 'E' to push the wall for $" + price);
+                    canPush = true;
+                }
+            }
         }
     }
 
     void OnTriggerExit(Collider other) {
         if (other.CompareTag("Player")) {
+            player = null;
             canPush = false;
             PlayerMessage.HideMessage();
         }

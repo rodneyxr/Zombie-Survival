@@ -57,22 +57,6 @@ public class PlayerController : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        // Pause
-        if (Input.GetButtonDown("Cancel")) {
-            if (GameEngine.paused) {
-                GameEngine.SetPaused(false);
-                //print("Player: Unpause");
-                //GameEngine.paused = false;
-                //Cursor.lockState = CursorLockMode.None;
-                //Cursor.visible = false;
-            } else {
-                GameEngine.SetPaused(true);
-                //print("Player: Pause");
-                //GameEngine.paused = true;
-                //Cursor.lockState = CursorLockMode.Locked;
-                //Cursor.visible = true;
-            }
-        }
         if (GameEngine.paused) return;
 
         // Switch Weapons
@@ -115,7 +99,7 @@ public class PlayerController : MonoBehaviour {
 
         // Repair Barricade
         if (player.CurrentBarricade != null && Input.GetKey(KeyCode.E)) {
-            player.CurrentBarricade.Repair();
+            if (player.CurrentBarricade.Repair()) player.AddMoney(player.CurrentBarricade.moneyOnRepair);
         }
 
         // Fire

@@ -18,7 +18,6 @@ public class AI : Character {
     public State state;
     private Barricade barricade; // the barricade the AI will target/attack
     private bool isInside = false; // true if the AI has gotten passed the barricade already
-    //private bool stop = false;
     private bool paused = false;
 
     // Attack
@@ -28,6 +27,10 @@ public class AI : Character {
     private float attackDistance;
     private float attackOffset = 1f;
     private float moveSpeed;
+
+    // Economy
+    public int moneyOnDeath = 10;
+    public int moneyOnHit = 2;
 
     // Animation
     private Animator anim;
@@ -65,9 +68,9 @@ public class AI : Character {
                 AttackBarricade();
                 break;
 
-            case State.GetInside:
-                GetInside();
-                break;
+            //case State.GetInside:
+            //    GetInside();
+            //    break;
 
             case State.ChasePlayer:
                 ChasePlayer();
@@ -76,6 +79,8 @@ public class AI : Character {
             case State.AttackPlayer:
                 AttackPlayer();
                 break;
+
+            default: break;
         }
 
         anim.SetFloat(hashSpeed, agent.velocity.magnitude);
@@ -142,7 +147,6 @@ public class AI : Character {
     }
 
     void TransitionChasePlayer() {
-        //stop = false;
         agent.Resume();
         state = State.ChasePlayer;
         agent.stoppingDistance = defaultStoppingDistance;
@@ -168,7 +172,6 @@ public class AI : Character {
     }
 
     void TransitionAttackPlayer() {
-        //stop = true;
         agent.Stop();
         state = State.AttackPlayer;
         agent.stoppingDistance = defaultStoppingDistance;
@@ -187,8 +190,7 @@ public class AI : Character {
         }
     }
 
-    void GetInside() {
-    }
+    //void GetInside() {}
 
     void ChasePlayer() {
         if (isInside && agent.remainingDistance <= attackDistance + attackOffset) {
@@ -213,9 +215,15 @@ public class AI : Character {
         timeToAttack = Time.time + attackSpeed;
     }
 
+    public override void Damage(float damage) {
+        base.Damage(damage);
+        player.AddMoney(moneyOnHit);
+    }
+
     public override void OnDeath() {
         print(name + " OnDeath().");
         Destroy(this.gameObject);
+        player.AddMoney(moneyOnDeath);
         waveManager.ZombieDied();
     }
 

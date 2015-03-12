@@ -17,6 +17,9 @@ public class Barricade : MonoBehaviour {
     private bool canRepair = true;
     private bool canBreak = true;
 
+    // Economy
+    public int moneyOnRepair = 5;
+
     private NavMeshObstacle shortWall;
 
     // Sound
@@ -52,11 +55,11 @@ public class Barricade : MonoBehaviour {
         StartCoroutine(DelayBreak());
     }
 
-    public void Repair() {
-        if (!canRepair) return;
+    public bool Repair() {
+        if (!canRepair) return false;
         //print("Barricade: Enter Repair");
         int plankIndex = currentPlank - 1;
-        if (plankIndex < 0 || plankIndex > planks.Length) { /*print("No Planks to repair!");*/ return; }
+        if (plankIndex < 0 || plankIndex > planks.Length) { /*print("No Planks to repair!");*/ return false; }
         Rigidbody plank = planks[plankIndex];
         plank.isKinematic = true;
         plank.Sleep();
@@ -67,6 +70,7 @@ public class Barricade : MonoBehaviour {
         shortWall.enabled = !Destroyed;
         sound.Play();
         StartCoroutine(DelayRepair());
+        return true;
     }
 
     IEnumerator DelayRepair() {

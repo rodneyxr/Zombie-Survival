@@ -9,12 +9,13 @@ public class GameEngine : MonoBehaviour {
     private int wave = 0;
 
     void Start() {
-       //SetPaused(false);
+        SetPaused(false);
         AI.waveManager = waveManager;
         StartWave(1);
     }
 
     void Update() {
+
     }
 
     void StartWave(int wave) {
@@ -27,21 +28,17 @@ public class GameEngine : MonoBehaviour {
         StartWave(wave);
     }
 
-    //public void SetPaused(bool paused) {
-
-    //}
+    public void TogglePaused() {
+        SetPaused(!paused);
+    }
 
     public static void SetPaused(bool paused) {
         GameEngine.paused = paused;
         HUD.SetPausedPanelActive(paused);
-        if (paused) {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = true;
-        } else {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = false;
-        }
+        HUD.LockCursor(!paused);
     }
+
+    
 
     public void MainMenu() {
         Application.LoadLevel("MainMenu");
