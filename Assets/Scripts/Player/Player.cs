@@ -7,6 +7,8 @@ public class Player : Character {
 
     public HealthBar healthBar;
     public float maxHealth = 100f;
+    public int initialMoney = 0;
+    private int money = 0;
 
     public float regenAmount = 10f;
     public float poisonAmount = 10f;
@@ -21,6 +23,7 @@ public class Player : Character {
     void Start() {
         playerController = GetComponent<PlayerController>();
         health = maxHealth;
+        UpdateMoney(initialMoney);
         //Damage(100);
     }
 
@@ -79,6 +82,21 @@ public class Player : Character {
             default:
                 break;
         }
+    }
+
+    private void UpdateMoney(int amount) {
+        money = Mathf.Max(0, money + amount);
+        HUD.Money = "Money: $" + money;
+    }
+
+    public void AddMoney(int amount) {
+        UpdateMoney(amount);
+    }
+
+    public bool ChargeMoney(int amount) {
+        if (money < amount) return false;
+        UpdateMoney(-amount);
+        return true;
     }
 
     public void Regen(float health) {

@@ -60,17 +60,17 @@ public class PlayerController : MonoBehaviour {
         // Pause
         if (Input.GetButtonDown("Cancel")) {
             if (GameEngine.paused) {
-                print("Player: Unpause");
-                PlayerMessage.HideMessage();
-                GameEngine.paused = false;
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = false;
+                GameEngine.SetPaused(false);
+                //print("Player: Unpause");
+                //GameEngine.paused = false;
+                //Cursor.lockState = CursorLockMode.None;
+                //Cursor.visible = false;
             } else {
-                print("Player: Pause");
-                PlayerMessage.DisplayMessage("PAUSED");
-                GameEngine.paused = true;
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = true;
+                GameEngine.SetPaused(true);
+                //print("Player: Pause");
+                //GameEngine.paused = true;
+                //Cursor.lockState = CursorLockMode.Locked;
+                //Cursor.visible = true;
             }
         }
         if (GameEngine.paused) return;
