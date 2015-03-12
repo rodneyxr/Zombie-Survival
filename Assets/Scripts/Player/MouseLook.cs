@@ -41,6 +41,7 @@ public class MouseLook : MonoBehaviour {
     }
 
     void OnGUI() {
+        if (GameEngine.paused) return;
         float scaleFactor = Mathf.Max(Screen.width, Screen.height) / 1080f;
         float shrinkFactor = cam.fieldOfView / normal;
         float imgWidth = (crosshairImage.width * scaleFactor) * shrinkFactor;
