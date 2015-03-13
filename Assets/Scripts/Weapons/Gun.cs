@@ -51,7 +51,7 @@ public class Gun : MonoBehaviour {
         sound = GetComponent<AudioSource>();
         clip = clipSize;
         ammo = defaultAmmo;
-        updateAmmo();
+        UpdateAmmo();
     }
 
     void Update() {
@@ -96,7 +96,7 @@ public class Gun : MonoBehaviour {
         int ammoReload = Mathf.Min(ammo, clipSize - clip);
         clip += ammoReload;
         ammo -= ammoReload;
-        updateAmmo();
+        UpdateAmmo();
     }
 
     public void AttemptToFire() {
@@ -126,7 +126,7 @@ public class Gun : MonoBehaviour {
         gameObject.SetActive(true);
         IK.gun = this;
         IK.ikLeftHandWeight = 1f;
-        updateAmmo();
+        UpdateAmmo();
         HUD.Weapon = weaponName;
     }
 
@@ -148,7 +148,7 @@ public class Gun : MonoBehaviour {
             PlayerController.AnimateShoot();
             sound.PlayOneShot(soundShoot, 1f);
             clip--;
-            updateAmmo();
+            UpdateAmmo();
             if (hitCollider != null)
                 hitCollider.SendMessage("Damage", power, SendMessageOptions.DontRequireReceiver);
             if (fireDelay == 0) break;
@@ -172,6 +172,11 @@ public class Gun : MonoBehaviour {
         Fire();
     }
 
+    public void AddAmmo(int amount) {
+        ammo = Mathf.Min(ammo + amount, maxAmmo);
+        UpdateAmmo();
+    }
+
     private void SignalEmptyClip() {
         sound.PlayOneShot(soundEmptyClip, 1f);
         timeToFire = Time.time + fireDelay;
@@ -185,7 +190,7 @@ public class Gun : MonoBehaviour {
         get { return timeToFire < Time.time; }
     }
 
-    public void updateAmmo() {
+    public void UpdateAmmo() {
         HUD.Ammo = "Ammo: " + clip + " / " + ammo;
     }
 

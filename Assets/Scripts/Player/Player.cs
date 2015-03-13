@@ -87,6 +87,10 @@ public class Player : Character {
         }
     }
 
+    public void AddAmmo() {
+        playerController.weaponManager.AddAmmo();
+    }
+
     private void UpdateMoney(int amount) {
         money = Mathf.Max(0, money + amount);
         HUD.Money = "Money: $" + money;

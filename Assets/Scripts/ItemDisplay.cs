@@ -101,6 +101,9 @@ public class ItemDisplay : MonoBehaviour {
             case "Weapon":
                 player.PickUp(feature);
                 break;
+            case "AmmoBox":
+                player.AddAmmo();
+                break;
         }
 
         // reset the feature
