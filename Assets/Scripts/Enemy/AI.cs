@@ -58,7 +58,8 @@ public class AI : Character {
     }
 
     void StateMachine() {
-        if (GameEngine.paused) return;
+        if (!GameEngine.gameOver)
+            if (GameEngine.paused) return;
         switch (state) {
             case State.TargetBarricade:
                 TargetBarricade();
@@ -88,13 +89,14 @@ public class AI : Character {
     }
 
     void Update() {
-        if (GameEngine.paused && !paused) {
-            agent.Stop();
-            paused = true;
-        } else if (!GameEngine.paused && paused) {
-            agent.Resume();
-            paused = false;
-        }
+        if (!GameEngine.gameOver)
+            if (GameEngine.paused && !paused) {
+                agent.Stop();
+                paused = true;
+            } else if (!GameEngine.paused && paused) {
+                agent.Resume();
+                paused = false;
+            }
     }
 
     void OnTriggerEnter(Collider other) {

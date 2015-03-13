@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour {
 
     // Look
     public MouseLook mouseLook;
+    public CameraOrbit cameraOrbit;
     public float defaultMouseSensitivity = 3.0f;
     private float mouseSensitivity;
     private float yaw = 0f;
@@ -46,13 +47,13 @@ public class PlayerController : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
         cc = GetComponent<CharacterController>();
         anim = GetComponentInChildren<Animator>();
         player = GetComponent<Player>();
         sound = GetComponent<AudioSource>();
         mouseSensitivity = defaultMouseSensitivity;
+        mouseLook.enabled = true;
+        cameraOrbit.enabled = false;
     }
 
     // Update is called once per frame
@@ -142,6 +143,8 @@ public class PlayerController : MonoBehaviour {
 
     public void Die() {
         anim.SetBool(hashDead, true);
+        mouseLook.enabled = false;
+        cameraOrbit.enabled = true;
     }
 
     public static void AnimateReload() {

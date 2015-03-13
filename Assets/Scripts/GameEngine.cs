@@ -5,6 +5,7 @@ public class GameEngine : MonoBehaviour {
 
     public WaveManager waveManager;
     public static bool paused = false;
+    public static bool gameOver = false;
 
     private int wave = 0;
 
@@ -15,7 +16,6 @@ public class GameEngine : MonoBehaviour {
     }
 
     void Update() {
-
     }
 
     void StartWave(int wave) {
@@ -38,7 +38,11 @@ public class GameEngine : MonoBehaviour {
         HUD.LockCursor(!paused);
     }
 
-    
+    public static void GameOver() {
+        gameOver = true;
+        SetPaused(true);
+        HUD.SetGameOverPanelActive();
+    }
 
     public void MainMenu() {
         Application.LoadLevel("MainMenu");

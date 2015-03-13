@@ -9,6 +9,7 @@ public class Player : Character {
     public float maxHealth = 100f;
     public int initialMoney = 0;
     private int money = 0;
+    private bool alive = true;
 
     public float regenAmount = 10f;
     public float poisonAmount = 10f;
@@ -24,10 +25,12 @@ public class Player : Character {
         playerController = GetComponent<PlayerController>();
         health = maxHealth;
         UpdateMoney(initialMoney);
-        //Damage(100);
+
     }
 
     void Update() {
+        if (GameEngine.paused) return;
+        if (!alive) return;
         if (timeToRegen < Time.time) {
             timeToRegen = Time.time + regenDelay;
             if (poisoned) {
@@ -110,13 +113,18 @@ public class Player : Character {
 
     public override void Damage(float damage) {
         base.Damage(damage);
+        if (GameEngine.gameOver) return;
         playerController.AnimateHit();
         healthBar.UpdateHealthBar();
     }
 
     public override void OnDeath() {
         print("Player: Player OnDeath()");
+        health = 0;
+        healthBar.UpdateHealthBar();
+        alive = false;
         playerController.Die();
+        GameEngine.GameOver();
     }
 
     public Barricade CurrentBarricade {

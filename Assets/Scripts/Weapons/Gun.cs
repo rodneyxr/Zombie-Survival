@@ -10,6 +10,7 @@ public class Gun : MonoBehaviour {
     public AudioClip soundEmptyClip;
 
     // Settings
+    public string weaponName;
     public Transform bulletTransform;
     public int power = 10;
     public float range = 100f;
@@ -25,6 +26,7 @@ public class Gun : MonoBehaviour {
     private int ammo = 0;
     private int clip = 0;
     private float timeToFire = 0f;
+    private Collider hitCollider;
 
     // IK
     public Transform IK_LEFT_HAND;
@@ -125,23 +127,12 @@ public class Gun : MonoBehaviour {
         IK.gun = this;
         IK.ikLeftHandWeight = 1f;
         updateAmmo();
+        HUD.Weapon = weaponName;
     }
 
     private void Fire() {
         timeToFire = Time.time + burstDelay;
         StartCoroutine(Burst());
-        //if (muzzleTimer < 0) {
-        //    muzzleFlash.Emit();
-        //    redLight.SetActive(true);
-        //    orangeLight.SetActive(true);
-        //    yellowLight.SetActive(true);
-        //    muzzleTimer = muzzleCooler;
-        //}
-
-        //PlayerController.AnimateShoot();
-        //sound.PlayOneShot(soundShoot, 1f);
-        //clip--;
-        //updateAmmo();
     }
 
     IEnumerator Burst() {
@@ -158,16 +149,14 @@ public class Gun : MonoBehaviour {
             sound.PlayOneShot(soundShoot, 1f);
             clip--;
             updateAmmo();
-            if (collider != null)
-                collider.SendMessage("Damage", power, SendMessageOptions.DontRequireReceiver);
+            if (hitCollider != null)
+                hitCollider.SendMessage("Damage", power, SendMessageOptions.DontRequireReceiver);
             if (fireDelay == 0) break;
             yield return new WaitForSeconds(fireDelay);
         }
-        collider = null;
+        hitCollider = null;
         yield return null;
     }
-
-    private Collider collider;
 
     public void Fire(Vector3 point) {
         BulletPool.ActivateBullet(bulletTransform.position, Quaternion.LookRotation(point - bulletTransform.position, Vector3.up));
@@ -178,10 +167,7 @@ public class Gun : MonoBehaviour {
         BulletPool.ActivateBullet(bulletTransform.position, Quaternion.LookRotation(hit.point - bulletTransform.position, Vector3.up));
         if (hit.transform.CompareTag("Enemy")) {
             Instantiate(bloodSplat, hit.point, Quaternion.LookRotation(hit.normal));
-            //GameObject splat = Instantiate(bloodSplat, hit.point, Quaternion.LookRotation(hit.normal)) as GameObject;
-            //Destroy(splat, 1);
-            //hit.collider.SendMessage("Damage", power, SendMessageOptions.DontRequireReceiver);
-            collider = hit.collider;
+            hitCollider = hit.collider;
         }
         Fire();
     }
@@ -227,6 +213,3 @@ public class Gun : MonoBehaviour {
     }
 
 }
-//create hit particle here
-//Particle particleClone = Instantiate(par, hit.point, Quaternion.LookRotation(hit.normal));
-//Destroy(particleClone, 2);

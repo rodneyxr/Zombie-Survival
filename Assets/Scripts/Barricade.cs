@@ -24,6 +24,7 @@ public class Barricade : MonoBehaviour {
 
     // Sound
     private AudioSource sound;
+    public AudioClip banging;
 
     void Start() {
         sound = GetComponent<AudioSource>();
@@ -52,6 +53,7 @@ public class Barricade : MonoBehaviour {
         planks[currentPlank].WakeUp();
         currentPlank++;
         shortWall.enabled = !Destroyed;
+        sound.PlayOneShot(banging);
         StartCoroutine(DelayBreak());
     }
 

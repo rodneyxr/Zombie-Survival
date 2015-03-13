@@ -8,23 +8,29 @@ public class HUD : MonoBehaviour {
     public Text textWave;
     public Text textZombiesLeft;
     public Text textMoney;
+    public Text textWeapon;
     public GameObject panelPaused;
     public GameObject panelControls;
+    public GameObject panelGameOver;
 
     private static Text ammo;
     private static Text wave;
     private static Text zombiesLeft;
     private static Text money;
+    private static Text weapon;
     private static GameObject paused;
     private static GameObject controls;
+    private static GameObject gameOver;
 
     void Awake() {
         ammo = textAmmo;
         wave = textWave;
         zombiesLeft = textZombiesLeft;
         money = textMoney;
+        weapon = textWeapon;
         paused = panelPaused;
         controls = panelControls;
+        gameOver = panelGameOver;
     }
 
     void Update() {
@@ -54,6 +60,10 @@ public class HUD : MonoBehaviour {
         set { money.text = value; }
     }
 
+    public static string Weapon {
+        set { weapon.text = value; }
+    }
+
     public static void TogglePausedPanel() {
         paused.SetActive(!paused.activeSelf);
     }
@@ -69,6 +79,12 @@ public class HUD : MonoBehaviour {
     public static void SetControlsPanelActive(bool active) {
         controls.SetActive(active);
         SetPausedPanelActive(!active);
+    }
+
+    public static void SetGameOverPanelActive() {
+        paused.SetActive(false);
+        controls.SetActive(false);
+        gameOver.SetActive(true);
     }
 
     public static void LockCursor(bool locked) {

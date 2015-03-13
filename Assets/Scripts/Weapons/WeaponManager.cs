@@ -51,6 +51,7 @@ public class WeaponManager : MonoBehaviour {
         cIndex = index;
         currentWeapon = weapons[cIndex];
         currentWeapon.Enable();
+        //HUD.Weapon = currentWeapon.name;
     }
 
     public void DropWeapon(Gun weaponToDrop) {
@@ -64,7 +65,8 @@ public class WeaponManager : MonoBehaviour {
         Gun oldWeapon = currentWeapon;
         weapons[cIndex] = newWeapon;
         currentWeapon = newWeapon;
-        newWeapon.Enable();
+        currentWeapon.Enable();
+        //HUD.Weapon = currentWeapon.name;
         return oldWeapon;
     }
 
