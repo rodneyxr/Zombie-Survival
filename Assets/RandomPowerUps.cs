@@ -14,5 +14,5 @@ public class RandomPowerUps : MonoBehaviour {
 
     }
 
-    IEnumerator 
+    //IEnumerator 
 }
