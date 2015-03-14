@@ -12,7 +12,7 @@ public class GameEngine : MonoBehaviour {
     void Start() {
         SetPaused(false);
         AI.waveManager = waveManager;
-        StartWave(1);
+        StartWave(9);
     }
 
     void Update() {

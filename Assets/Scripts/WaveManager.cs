@@ -13,8 +13,10 @@ public class WaveManager : MonoBehaviour {
     public float spawnRadius = 50f;
     public int entrances = 5;
 
-    public int initialNumberOfZombies = 6;
-    public float initialZombieSpeed = .5f;
+    public int initialNumberOfZombies = 5;
+    public float initialZombieSpeed = 1.5f;
+    public float spawnInterval = 20f;
+    public int hordeSize = 15;
     private int wave;
     private int zombiesLeft;
     private float zombieSpeed;
@@ -24,13 +26,25 @@ public class WaveManager : MonoBehaviour {
         zombiesLeft = (int)(initialNumberOfZombies * Mathf.Pow(1.5f, (float)wave - 1));
         zombieSpeed = initialZombieSpeed * Mathf.Pow(1.2f, (float)wave - 1);
         StartCoroutine(DelayedWaveChange());
-        SpawnZombies(zombiesLeft);
+        StartCoroutine(SpawnZombies(zombiesLeft));
     }
 
-    public void SpawnZombies(int amount) {
+    public void InstantSpawnZombies(int amount) {
         for (int i = 0; i < amount; i++) {
             SpawnZombie();
         }
+    }
+
+    IEnumerator SpawnZombies(int amount) {
+        int i = 0;
+        while (i < amount) {
+            int horde = Mathf.Min(hordeSize, amount - i);
+            InstantSpawnZombies(horde);
+            i += horde;
+            if (i == amount) break;
+            yield return new WaitForSeconds(spawnInterval);
+        }
+        yield return null;
     }
 
     public void SpawnZombie() {

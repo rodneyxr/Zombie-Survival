@@ -6,10 +6,14 @@ public class FallingWall : MonoBehaviour {
     private WaveManager waveManager;
     private Player player;
 
+    public GameObject[] objectsToEnable;
+    public GameObject[] objectsToDisable;
+
     public GameObject forceField;
     public GameObject obsticle;
     public GameObject wall;
     public GameObject glass;
+    public RandomPowerUps randomPowerUps;
     public AudioSource gameChangerClip;
     private BoxCollider boxTrigger;
 
@@ -17,6 +21,7 @@ public class FallingWall : MonoBehaviour {
     public int price = 500;
 
     private bool canPush = false;
+    private bool pushed = false;
 
     void Start() {
         waveManager = GameObject.Find("_Main").GetComponent<WaveManager>();
@@ -24,6 +29,7 @@ public class FallingWall : MonoBehaviour {
     }
 
     void Update() {
+        if (pushed) return;
         if (canPush && Input.GetKeyDown(KeyCode.E)) {
             if (player.ChargeMoney(price)) {
                 Push();
@@ -33,6 +39,7 @@ public class FallingWall : MonoBehaviour {
     }
 
     void OnTriggerEnter(Collider other) {
+        if (pushed) return;
         if (other.CompareTag("Player")) {
             player = other.GetComponent<Player>();
             if (player.Money < price) {
@@ -46,6 +53,7 @@ public class FallingWall : MonoBehaviour {
     }
 
     void OnTriggerStay(Collider other) {
+        if (pushed) return;
         if (other.CompareTag("Player")) {
             if (player.Money < price != !canPush) {
                 if (player.Money < price) {
@@ -69,6 +77,8 @@ public class FallingWall : MonoBehaviour {
 
     void Push() {
         canPush = false;
+        pushed = true;
+        SFX.PlayMoneySound();
         wall.GetComponent<Rigidbody>().isKinematic = false;
         wall.GetComponent<Rigidbody>().WakeUp();
         PlayerMessage.HideMessage();
@@ -86,7 +96,13 @@ public class FallingWall : MonoBehaviour {
         GameObject.Destroy(boxTrigger);
         wall.GetComponent<Rigidbody>().isKinematic = true;
         gameChangerClip.Play();
+        randomPowerUps.GameChanger();
         waveManager.GameChanger();
+
+        for (int i = 0; i < objectsToDisable.Length; i++)
+            objectsToDisable[i].SetActive(false);
+        for (int i = 0; i < objectsToEnable.Length; i++)
+            objectsToEnable[i].SetActive(true);
     }
 
     IEnumerator Wait(float duration) {

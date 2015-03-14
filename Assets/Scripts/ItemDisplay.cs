@@ -35,7 +35,7 @@ public class ItemDisplay : MonoBehaviour {
             origScale = item.transform.localScale;
             origRotation = item.transform.localRotation;
             feature = Instantiate(item, featureTransform.position, featureTransform.rotation) as GameObject;
-            if (init) Destroy(item);
+            if (init && item.CompareTag("Weapon")) Destroy(item);
             feature.SetActive(true);
             feature.transform.SetParent(transform);
             timeToDestroy = Time.time + life;
@@ -96,13 +96,19 @@ public class ItemDisplay : MonoBehaviour {
     }
 
     void Interact() {
-        print("Interact: name: " + feature.name + " tag: " + feature.tag);
+        //print("Interact: name: " + feature.name + " tag: " + feature.tag);
         switch (feature.tag) {
             case "Weapon":
                 player.PickUp(feature);
+                SFX.PlayAmmoSound();
                 break;
             case "AmmoBox":
                 player.AddAmmo();
+                SFX.PlayAmmoSound();
+                break;
+            case "Coin":
+                player.AddMoney(100);
+                SFX.PlayMoneySound();
                 break;
         }
 

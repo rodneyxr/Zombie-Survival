@@ -97,6 +97,7 @@ public class WeaponManager : MonoBehaviour {
         foreach (Gun weapon in weapons) {
             weapon.AddAmmo(weapon.maxAmmo / 2);
         }
+        currentWeapon.UpdateAmmo();
     }
 
     public void Fire() {

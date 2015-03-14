@@ -36,17 +36,25 @@ public class AI : Character {
     private Animator anim;
     private int hashSpeed = Animator.StringToHash("Speed");
 
+    // Sound
+    public AudioClip[] zombieSounds;
+    private AudioSource sound;
+    public float soundInterval = 15f;
+    public float intervalVariation = 5;
+
     public float initialHealth = 100f;
 
     void Start() {
         anim = GetComponentInChildren<Animator>();
         agent = GetComponent<NavMeshAgent>();
+        sound = GetComponent<AudioSource>();
         agent.speed = moveSpeed;
         playerTarget = player.transform;
         TransitionTargetBarricade();
         agent.stoppingDistance = defaultStoppingDistance;
         attackDistance = defaultStoppingDistance;
         health = initialHealth;
+        if (zombieSounds.Length > 0) Invoke("PlayRandomSound", GetRandomInterval());
         InvokeRepeating("StateMachine", 0f, .3f);
     }
 
@@ -217,13 +225,23 @@ public class AI : Character {
         timeToAttack = Time.time + attackSpeed;
     }
 
+    private float GetRandomInterval() {
+        return soundInterval + (Random.Range(0, intervalVariation) * 2 - intervalVariation);
+    }
+
+    private void PlayRandomSound() {
+        if (zombieSounds.Length == 0) return;
+        sound.PlayOneShot(zombieSounds[Random.Range(0, zombieSounds.Length)]);
+        Invoke("PlayRandomSound", GetRandomInterval());
+    }
+
     public override void Damage(float damage) {
         base.Damage(damage);
         player.AddMoney(moneyOnHit);
     }
 
     public override void OnDeath() {
-        print(name + " OnDeath().");
+        //print(name + " OnDeath().");
         Destroy(this.gameObject);
         player.AddMoney(moneyOnDeath);
         waveManager.ZombieDied();

@@ -11,10 +11,10 @@ public class Player : Character {
     private int money = 0;
     private bool alive = true;
 
+    public float regenDelay = 5f;
     public float regenAmount = 10f;
     public float poisonAmount = 10f;
     public bool poisoned = false;
-    private float regenDelay = 5f;
     private float timeToRegen = 0f;
 
     private PlayerController playerController;
@@ -25,7 +25,6 @@ public class Player : Character {
         playerController = GetComponent<PlayerController>();
         health = maxHealth;
         UpdateMoney(initialMoney);
-
     }
 
     void Update() {
@@ -129,6 +128,7 @@ public class Player : Character {
         alive = false;
         playerController.Die();
         GameEngine.GameOver();
+        PlayerMessage.HideMessage();
     }
 
     public Barricade CurrentBarricade {

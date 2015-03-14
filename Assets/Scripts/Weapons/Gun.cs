@@ -47,11 +47,11 @@ public class Gun : MonoBehaviour {
     private float muzzleTimer = 0f;
     private float muzzleCooler = .1f;
 
-    void Start() {
+    void Awake() {
         sound = GetComponent<AudioSource>();
         clip = clipSize;
         ammo = defaultAmmo;
-        UpdateAmmo();
+        //UpdateAmmo();
     }
 
     void Update() {
@@ -174,7 +174,7 @@ public class Gun : MonoBehaviour {
 
     public void AddAmmo(int amount) {
         ammo = Mathf.Min(ammo + amount, maxAmmo);
-        UpdateAmmo();
+        //UpdateAmmo();
     }
 
     private void SignalEmptyClip() {

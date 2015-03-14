@@ -39,11 +39,11 @@ public class Barricade : MonoBehaviour {
         }
     }
 
-    void Update() {
-        if (Input.GetKeyDown(KeyCode.Q)) {
-            Break();
-        }
-    }
+    //void Update() {
+    //    if (Input.GetKeyDown(KeyCode.Q)) {
+    //        Break();
+    //    }
+    //}
 
     public void Break() {
         if (!canBreak) return;
